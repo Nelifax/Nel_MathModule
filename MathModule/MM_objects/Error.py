@@ -8,8 +8,10 @@ class MatrixError(Exception):
     MM_error_wrong_generator_keys = 7
     MM_error_not_enough_numbers = 8
     MM_error_multiply_not_allowed = 9
+    MM_error_div_not_allowed = 9
     def __init__(self, errorCode:int, addition = []):
         error_string = 'test error string'
+        self.errorCode = errorCode
         match errorCode:
             case MatrixError.MM_error_wrong_line_count: error_string = f'Wrong line count. row != column'
             case MatrixError.MM_error_inverted_rectangle: error_string = f'Error: inverted matrix is not defined for rectangle form'
@@ -20,6 +22,7 @@ class MatrixError(Exception):
             case MatrixError.MM_error_wrong_generator_keys: error_string = f'Error: there are wrong sybols in generator-string'
             case MatrixError.MM_error_not_enough_numbers: error_string = f'Error: not enough numbers to generate matrix'
             case MatrixError.MM_error_multiply_not_allowed: error_string = f'Error: not allowed multiply between matrix and other'
+            case MatrixError.MM_error_div_not_allowed: error_string = f'Error: not allowed div between matrix and other'
             case _:
                 return
         if addition != []:

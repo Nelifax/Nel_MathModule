@@ -1,4 +1,4 @@
-from MM_tests.matrix_tests import matrix_test
+from MM_tests.matrix_tests import *
 
 def full_test()->None:
-    matrix_test()
+    matrices_base_test()

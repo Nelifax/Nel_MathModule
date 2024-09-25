@@ -56,6 +56,8 @@ class Matrix():
                 self.values = diagonalValues
                 self.__flags['rows'] = len(values)
                 self.__flags['columns'] = len(values)
+                self.__flags['invertible'] = True
+                #self.__flags['dimension'] = len(values)
                 self.determinant = 0
                 self.find_determinant()
                 return
@@ -79,9 +81,17 @@ class Matrix():
                 if '[sq]' in generator_attribute:
                     self.__flags['form'] = Matrix.MM_matrix_form_square
                     self.__generator_attribute = self.__generator_attribute.replace('[sq]', '', 1)
+                if '[rec]' in generator_attribute:
+                    raise MatrixError(MatrixError.MM_error_wrong_flags)
             elif type(generator_attribute) == str and flags!={}:
+                if '[sq]' in generator_attribute:
+                    if self.__flags['rows'] != self.__flags['columns']:
+                        raise MatrixError(MatrixError.MM_error_wrong_flags)
+                    self.__flags['form'] = Matrix.MM_matrix_form_square
+                    self.__generator_attribute = self.__generator_attribute.replace('[sq]', '', 1)
                 if '[rec]' in generator_attribute:
                     self.__flags['form'] = Matrix.MM_matrix_form_rectangle
+                    self.determinant = 'undefined'
                     self.__generator_attribute = self.__generator_attribute.replace('[rec]', '', 1)
                 if 'T' in generator_attribute:
                     self.__flags['transposed'] = 'in_process'
@@ -93,11 +103,12 @@ class Matrix():
                        
             if self.__flags['form'] == Matrix.MM_matrix_form_rectangle and (self.__flags['columns'] == 0 or self.__flags['rows'] == 0):
                 raise MatrixError(MatrixError.MM_error_wrong_flags, ['need \'columns\' and \'rows\' flags'])
+        #end of manual matrix-generation-------------------------------------------------------------------------
 
             generator_attribute = self.__generator_attribute
             
             if type(generator_attribute) == str:
-                if not generator_attribute.replace(',','').replace(' ','').replace('-','').isdigit():
+                if not generator_attribute.replace(',','').replace(' ','').replace('-','').replace('.','').isdigit():
                     raise MatrixError(MatrixError.MM_error_wrong_generator_keys)
                 values = generator_attribute.split(',')
                 if self.__flags['form'] == Matrix.MM_matrix_form_square:
@@ -115,12 +126,19 @@ class Matrix():
                         raise MatrixError(MatrixError.MM_error_not_enough_numbers)
             elif type(generator_attribute) == list:
                 self.values = generator_attribute
+                row_len = len(generator_attribute[0])
+                for row in generator_attribute:
+                    if len(row) !=row_len:
+                        raise MatrixError(MatrixError.MM_error_not_enough_numbers)
                 self.__flags['rows'] = len(generator_attribute)
                 self.__flags['columns'] = len(generator_attribute[0])
+                if self.__flags['rows'] == self.__flags['columns']:
+                    self.__flags['dimension'] = self.__flags['columns']
+                if self.__flags['rows'] != self.__flags['columns']: 
+                    self.determinant = 'undefined'
+                    self.__flags['calculated'] = True
                 if not self.__flags['calculated']:self.find_determinant()
             else: raise TimeoutError
-
-        #end of manual matrix-generation-------------------------------------------------------------------------
 
         if not MM_matrix_manual and type(generator_attribute) == str and ('T' in generator_attribute or 'I' in generator_attribute or '[rec]' in generator_attribute or '[sq]' in generator_attribute):
             raise MatrixError(MatrixError.MM_error_manual_disabled)
@@ -130,7 +148,10 @@ class Matrix():
             for i in range(0, self.__flags['rows']):
                 self.values.append([])
                 for j in range(0, self.__flags['columns']):
-                    self.values[i].append(int(values[counter]))
+                    if '.' in str(values[counter]):
+                        self.values[i].append(float(values[counter]))
+                    else:
+                        self.values[i].append(int(values[counter]))
                     counter+=1
             if not self.__flags['calculated']:self.find_determinant()
         elif type(generator_attribute) == list:
@@ -141,6 +162,7 @@ class Matrix():
         if self.determinant != 'undefined' and self.determinant !=0: self.__flags['invertible'] = True
         if self.__flags['inverted'] == 'in_process': self.invert()
         if self.__flags['transposed'] == 'in_process': self.transpose()
+        self.check_factor()
 
     def find_determinant(self):
         self.__flags['calculated'] = True
@@ -162,17 +184,12 @@ class Matrix():
                 for i in range(0, self.__flags['columns']):
                     self.determinant = self.determinant+self.find_addition(0,i)*self.values[0][i]
     
-    def find_addition(self, row:int, column:int)->int:
+    def find_minor(self, row:int, column:int)->'Matrix':
         is_parsing_int = True
-        if self.values[row][column] == 0 or self.values[row][column]==0.0:
-            return 0
-        if (row+column)%2==0:
-            sign = 1;
-        else: sign = -1;
         addI = 0
         addJ = 0
         if self.__flags['columns'] == self.__flags['rows'] and self.__flags['columns'] == 1:
-            return self.values[row][column]*sign;
+            return self.values[row][column];
         newMatrixNumber = ''
         newMatrixValues = []
         for i in range(0,self.__flags['rows'] - 1):
@@ -203,7 +220,14 @@ class Matrix():
             newMatrix = Matrix(newMatrixNumber[:-1], newMatrixRules)
         else:
             newMatrix = Matrix(newMatrixValues, newMatrixRules)
-        return newMatrix.determinant*sign
+        return newMatrix
+
+    def find_addition(self, row:int, column:int)->int:
+        if (row+column)%2==0:
+            sign = 1;
+        else: 
+            sign = -1;
+        return self.find_minor(row, column).determinant*sign
 
     def transpose(self)->'Matrix':
         newValues = []
@@ -227,24 +251,40 @@ class Matrix():
             raise MatrixError(MatrixError.MM_error_zero_determinant)
         if self.__flags['inverted'] == 'in_process':
             self.__flags['inverted'] = True
+            self.transpose()
             newValues = []
             for i in range(0, self.__flags['rows']):
                 newValues.append([])
                 for j in range(0, self.__flags['columns']):
                     newValues[i].append(self.find_addition(i, j)/self.determinant)
             self.values = newValues
-            self.transpose()
             self.__flags.update({'transposed': False})
+            self.check_factor()
             return self
         self.__flags['inverted'] = True
         newMatrix = self.copy()
+        self.transpose()
         for i in range(0, self.__flags['rows']):
             for j in range(0, self.__flags['columns']):
                 newMatrix.values[i][j] = self.find_addition(i, j)/self.determinant
-        newMatrix = newMatrix.transpose()
-        newMatrix.__flags.update({'transposed':False})
+        self.transpose()
         newMatrix.find_determinant()
+        newMatrix.check_factor()
         return newMatrix
+
+    def get_flags(self):
+        return self.__flags
+
+    def update_flags(self, flagsToUpdate:dict):
+        self.__flags.update(flagsToUpdate)
+
+    def get_generator(self):
+        generator_stroke = ''
+        for i in range(0,self.__flags['rows']):
+            for j in range(0, self.__flags['columns']):
+                generator_stroke+=str(self.values[i][j])+','
+        return generator_stroke[0:-1]
+
 
     def print(self):
         print(f'Current matrix: \ngenerator:"{self.generator_stroke}"')
@@ -261,7 +301,16 @@ class Matrix():
         print(f'determinant = {self.determinant}')
         for key, value in self.__flags.items():
             print(f'{key}: {value}')
-           
+    
+    def check_factor(self):
+        for i in range(0,self.__flags['rows']):
+            for j in range(0, self.__flags['columns']):
+                if i==j:
+                    continue
+                if self.values[i][j] != 0 or self.values[i][j] != 0.0:
+                    self.update_flags({'factor':Matrix.MM_matrix_factor_standart})
+                    return
+        self.update_flags({'factor':Matrix.MM_matrix_factor_diagonal})
 
     def copy(self)->'Matrix':
         flags = self.__flags.copy()
@@ -279,6 +328,7 @@ class Matrix():
                     resultMatrix.values[i][j] = resultMatrix.values[i][j]*other
             resultMatrix.__generator_attribute = resultMatrix.__generator_attribute + 'x' + str(other)
             resultMatrix.find_determinant()
+            resultMatrix.check_factor()
             return resultMatrix
         elif isinstance(other, Matrix):
             if self.__flags['columns'] != other.__flags['rows'] or self.__flags['rows'] != other.__flags['columns']:
@@ -290,17 +340,19 @@ class Matrix():
                         value = 0
                         for k in range(0, other.__flags['rows']):
                             value += self.values[i][k]*other.values[k][j]
-                        newMatrixValues[i].append(value)
-            return Matrix(newMatrixValues)
+                        newMatrixValues[i].append(value)       
+            resultMatrix = Matrix(newMatrixValues)
+            resultMatrix.check_factor()
+            return resultMatrix
         else: raise TimeoutError
 
     def __pow__(self,value:int)->'Matrix':
+        result = self.copy()
         if self.__flags['rows'] != self.__flags['columns']:
             raise MatrixError(MatrixError.MM_error_wrong_line_count)
         if value <0:
-            return (self**abs(value)).invert()
+            return (result**abs(value)).invert()
         if value == 0:
-            result = self.copy()
             for i in range(0, self.__flags['rows']):
                 for j in range(0, self.__flags['columns']):
                     if i == j:
@@ -308,10 +360,46 @@ class Matrix():
                     else: 
                         result.values[i][j] = 0
             result.__flags.update({'factor':Matrix.MM_matrix_factor_diagonal})
-            result.find_determinant()
+            result.determinant = 1
             return result
         if value == 1:
             return self
         if value > 1:
-            return self*(self.copy()**(value-1))
+            return self*(self**(value-1))
+    
+    def __truediv__(self, other)->'Matrix':
+        if self.__flags['rows'] != self.__flags['columns']:
+            raise MatrixError(MatrixError.MM_error_wrong_line_count)
+        if self.__flags['rows'] != other.__flags['rows'] or self.__flags['rows'] != other.__flags['columns']:
+            raise MatrixError(MatrixError.MM_error_wrong_line_count)
+        if isinstance(other, Matrix):
+            return self*other.invert()
+        else: raise MatrixError(MatrixError.MM_error_div_not_allowed)
+    
+    def __add__(self, other:'Matrix')->'Matrix':
+        if self.__flags['columns'] != other.__flags['columns'] or self.__flags['rows'] != other.__flags['rows']:
+                raise MatrixError(MatrixError.MM_error_wrong_line_count)
+        result = self.copy()
+        for i in range(0, self.__flags['rows']):
+            for j in range(0, self.__flags['columns']):
+                result.values[i][j] = self.values[i][j]+other.values[i][j]
+        result.find_determinant()
+        return result
+    
+    def __sub__(self, other:'Matrix')->'Matrix':
+        if self.__flags['columns'] != other.__flags['columns'] or self.__flags['rows'] != other.__flags['rows']:
+                raise MatrixError(MatrixError.MM_error_wrong_line_count)
+        result = self.copy()
+        for i in range(0, self.__flags['rows']):
+            for j in range(0, self.__flags['columns']):
+                result.values[i][j] = self.values[i][j]-other.values[i][j]
+        result.find_determinant()
+        return result
+
+    def __eq__(self, other:'Matrix')->bool:
+        if isinstance(other, Matrix):
+            if self.get_flags() == other.get_flags() and self.values == other.values:
+                return True
+        return False
+
 
