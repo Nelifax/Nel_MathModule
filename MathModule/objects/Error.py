@@ -1,3 +1,5 @@
+__all__ = ['MatrixError']
+
 class MatrixError(Exception):
     MM_error_wrong_line_count = 1
     MM_error_inverted_rectangle = 2

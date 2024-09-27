@@ -1,5 +1,5 @@
-﻿from MM_objects.Error import *
-from MM_objects.Matrix import Matrix
+﻿from objects.Error import *
+from objects.Matrix import Matrix
 
 def matrices_base_test(reportType:str='full'):
     test_count = 0
@@ -228,14 +228,15 @@ def matrices_base_test(reportType:str='full'):
             [(Matrix('1,2,2,3,3,4,1,1,1').invert()*Matrix('1,2,2,3,3,4,1,1,1')).values, [[1,0,0],[0,1,0],[0,0,1]], f'(3x3 square matrix_A.invert)*(3x3 square matrix_A) test', 'multiply'],
             [(Matrix('1,2,2,3,3,4,1,1,1,3,2,3,1,1,1,1').invert()*Matrix('1,2,2,3,3,4,1,1,1,3,2,3,1,1,1,1')).values, [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]], f'(4x4 square matrix_A.invert)*(4x4 square matrix_A) test', 'multiply'],
             [((Matrix('1,2,2,3')**5).invert()).values, ((Matrix('1,2,2,3').invert())**5).values, f'(2x2 matrix_A^5)^-1 == (2x2 matrix_A^-1)^5 test', 'equality'],
-            [((Matrix('1,2,2,3,3,4,1,1,1')**5).invert()).values, ((Matrix('1,2,2,3,3,4,1,1,1').invert())**5).values, f'(2x2 matrix_A^5)^-1 == (2x2 matrix_A^-1)^5 test', 'equality'],
-            [((Matrix('1,2,2,3,3,4,1,1,1,3,2,3,1,1,1,1')**5).invert()).values, ((Matrix('1,2,2,3,3,4,1,1,1,3,2,3,1,1,1,1').invert())**5).values, f'(2x2 matrix_A^5)^-1 == (2x2 matrix_A^-1)^5 test', 'equality'],
+            [((Matrix('1,2,2,3,3,4,1,1,1')**5).invert()).values, ((Matrix('1,2,2,3,3,4,1,1,1').invert())**5).values, f'(3x3 matrix_A^5)^-1 == (3x3 matrix_A^-1)^5 test', 'equality'],
+            [((Matrix('1,2,2,3,3,4,1,1,1,3,2,3,1,1,1,1')**5).invert()).values, ((Matrix('1,2,2,3,3,4,1,1,1,3,2,3,1,1,1,1').invert())**5).values, f'(4x4 matrix_A^5)^-1 == (4x4 matrix_A^-1)^5 test', 'equality'],
             [(Matrix('1,2,2,3')).find_minor(1,1), Matrix([[1]]), f'finding a minor-matrix for 2x2 matrix', 'find minor (i,j)'],
             [(Matrix('1,2,2,3,3,4,1,1,1')).find_minor(1,2), Matrix([[1,2], [1,1]]), f'finding a minor-matrix for 3x3 matrix', 'find minor (i,j)'],
             [(Matrix('1,2,2,3,3,4,1,1,1,3,2,3,1,1,1,1')).find_minor(3,2), Matrix([[1,2,3], [3,4,1], [1,3,3]]), f'finding a minor-matrix for 4x4 matrix', 'find minor (i,j)'],
         ]
         for test in tests:
             test_count +=1
+            iterator+=1
             if test[0]==test[1]:
                 done_count+=1
                 print(f'{iterator}) '+test[2] + f': DONE')

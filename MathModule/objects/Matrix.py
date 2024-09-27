@@ -1,4 +1,6 @@
-from MM_objects.Error import MatrixError
+from objects.Error import MatrixError
+
+__all__=['MM_matrix_manual', 'Matrix']
 
 global MM_matrix_manual
 MM_matrix_manual = True;

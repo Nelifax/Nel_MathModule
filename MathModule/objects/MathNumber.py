@@ -1,5 +1,5 @@
-from MM_objects.Matrix import Matrix
-from MM_objects.Fraction import MM_Fraction
+from objects.Matrix import Matrix
+from objects.Fraction import Fraction
 
 
 class MathNumber():
