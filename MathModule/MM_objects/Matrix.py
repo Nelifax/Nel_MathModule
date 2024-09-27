@@ -30,9 +30,10 @@ class Matrix():
                 'form': Matrix.MM_matrix_form_square, 
                 'factor': Matrix.MM_matrix_factor_standart,
                 'invertible': False,
-                'dimension': 0,
+                'dimension': (0,0),
                 'columns': 0,
                 'rows': 0,
+                'rang': 'undefined',
                 'calculated': False
                 }
         if flags == {'factor':Matrix.MM_matrix_factor_diagonal}:
@@ -57,7 +58,7 @@ class Matrix():
                 self.__flags['rows'] = len(values)
                 self.__flags['columns'] = len(values)
                 self.__flags['invertible'] = True
-                #self.__flags['dimension'] = len(values)
+                self.__flags['dimension'] = (len(values), len(values))
                 self.determinant = 0
                 self.find_determinant()
                 return
@@ -116,12 +117,12 @@ class Matrix():
                     if dim**2 != len(values):
                         raise MatrixError(MatrixError.MM_error_not_enough_numbers)
                     else:
-                        self.__flags['dimension'] = dim
+                        self.__flags['dimension'] = (dim,dim)
                         self.__flags['rows'] = dim
                         self.__flags['columns'] = dim
                 else:
                     if len(values)/self.__flags['rows'] == self.__flags['columns']:
-                        self.__flags['dimension'] = 'undefined'
+                        self.__flags['dimension'] = (self.__flags['rows'], self.__flags['columns'])
                     else:
                         raise MatrixError(MatrixError.MM_error_not_enough_numbers)
             elif type(generator_attribute) == list:
@@ -132,8 +133,11 @@ class Matrix():
                         raise MatrixError(MatrixError.MM_error_not_enough_numbers)
                 self.__flags['rows'] = len(generator_attribute)
                 self.__flags['columns'] = len(generator_attribute[0])
+                self.__flags['dimension'] = (self.__flags['rows'], self.__flags['columns'])
                 if self.__flags['rows'] == self.__flags['columns']:
-                    self.__flags['dimension'] = self.__flags['columns']
+                    self.__flags['form'] = Matrix.MM_matrix_form_square
+                else:
+                    self.__flags['form'] = Matrix.MM_matrix_form_rectangle
                 if self.__flags['rows'] != self.__flags['columns']: 
                     self.determinant = 'undefined'
                     self.__flags['calculated'] = True
@@ -159,10 +163,25 @@ class Matrix():
             if not self.__flags['calculated']:self.find_determinant()
         else: raise TimeoutError
 
+        
+        self.check_factor()
+        self.columns = []
+        self.rows = []
+        for i in range(0, len(self.values)):
+            self.rows.append(self.values[i])
+        for i in range(0, len(self.values[0])):            
+            column = []
+            for j in range(0, len(self.values)):
+                column.append(self.values[j][i])
+            self.columns.append(column)
+
         if self.determinant != 'undefined' and self.determinant !=0: self.__flags['invertible'] = True
         if self.__flags['inverted'] == 'in_process': self.invert()
         if self.__flags['transposed'] == 'in_process': self.transpose()
-        self.check_factor()
+        if self.__flags['rang']=='undefined':
+            self.find_rang()
+            self.__flags['rang'] = self.rang
+        
 
     def find_determinant(self):
         self.__flags['calculated'] = True
@@ -184,26 +203,40 @@ class Matrix():
                 for i in range(0, self.__flags['columns']):
                     self.determinant = self.determinant+self.find_addition(0,i)*self.values[0][i]
     
-    def find_minor(self, row:int, column:int)->'Matrix':
+    def find_minor(self, row:int|list, column:int|list)->'Matrix':
+        newMatrixNumber = ''
+        newMatrixValues = []
+        if type(row)==list and type(column)==list:
+            for i in range(0, len(row)):
+                newMatrixValues.append([])
+                for j in range(0, len(column)):
+                    newMatrixValues[i].append([])
+            countI = 0
+            countJ = 0
+            for i in row:
+                countJ=0
+                for j in column:
+                    newMatrixValues[countI][countJ]=self.values[i][j]
+                    countJ+=1
+                countI+=1
+            return Matrix(newMatrixValues)
         is_parsing_int = True
         addI = 0
         addJ = 0
         if self.__flags['columns'] == self.__flags['rows'] and self.__flags['columns'] == 1:
             return self.values[row][column];
-        newMatrixNumber = ''
-        newMatrixValues = []
         for i in range(0,self.__flags['rows'] - 1):
             newMatrixValues.append([])
             for j in range(0,self.__flags['columns'] - 1):
                 newMatrixValues[i].append([])
         for i in range(0, self.__flags['rows']):
             addJ = 0
-            if i==row:
+            if i == row:
                 addI = 1
                 continue
             else:
                 for j in range(0, self.__flags['columns']):
-                    if j==column:
+                    if j == column:
                         addJ = 1
                         continue
                     else:
@@ -214,6 +247,7 @@ class Matrix():
         newMatrixRules = self.__flags.copy()
         newMatrixRules['rows'] -= 1
         newMatrixRules['columns'] -= 1
+        newMatrixRules['rang'] = 'undefined'
         newMatrixRules.update({'calculated':False})
         newMatrixRules.update({'inverted':False})
         if is_parsing_int:
@@ -235,12 +269,15 @@ class Matrix():
             newValues.append([])
             for j in range(0, self.__flags['rows']):
                 newValues[i].append(self.values[j][i])
-        t = self.__flags['columns']
         self.__flags['columns'] = self.__flags['rows']
-        self.__flags['rows'] = t
+        self.__flags['rows'] = self.__flags['dimension'][1]
         self.__flags['transposed'] = True
+        self.__flags['dimension'] = (self.__flags['rows'], self.__flags['columns'])
         self.values = newValues
         self.find_determinant()
+        saveattr = self.rows
+        self.rows = self.columns
+        self.columns = saveattr
         return self
     
     def get_generator_attribute(self)->str:
@@ -284,6 +321,56 @@ class Matrix():
             for j in range(0, self.__flags['columns']):
                 generator_stroke+=str(self.values[i][j])+','
         return generator_stroke[0:-1]
+
+    def find_rang(self):
+        if len(self.rows)<=len(self.columns):
+            rows = self.rows.copy()
+            for i in range(0, len(self.rows)-1):
+                for j in range(i+1, len(self.rows)):
+                    if rows[i][i] == 0:
+                        continue
+                    if rows[i][i]>0 and rows[j][i]>=0:
+                        rows[j] = Matrix.addVector(Matrix.mulVector(rows[i].copy(), -1*rows[j][i]/rows[i][i]),rows[j].copy())
+                    elif rows[i][i]<0 and rows[j][i]<0:
+                        rows[j] = Matrix.addVector(Matrix.mulVector(rows[i].copy(), rows[j][i]/rows[i][i]),rows[j].copy())
+                    else:
+                        rows[j] = Matrix.addVector(Matrix.mulVector(rows[i].copy(), -1*rows[j][i]/rows[i][i]),rows[j].copy())
+            independent = 0
+            for i in range(0, len(rows)):
+                if len(set(rows[i])) != 1 and set(rows[i]) !={0}:
+                    independent+=1                   
+            self.rang = independent
+            self.ranged = Matrix(rows, {'rang':self.rang})
+        else:
+            columns = self.columns.copy()
+            for i in range(0, len(self.columns)-1):
+                for j in range(i+1, len(self.columns)):
+                    if columns[i][i] == 0:
+                        continue
+                    if columns[i][i]>=0 and columns[j][i]>=0:
+                        columns[j] = Matrix.addVector(Matrix.mulVector(columns[i].copy(), -1*columns[j][i]/columns[i][i]),columns[j].copy())
+                    elif columns[i][i]<0 and columns[j][i]<0:
+                        columns[j] = Matrix.addVector(Matrix.mulVector(columns[i].copy(), -1*columns[j][i]/columns[i][i]),columns[j].copy())
+                    else:
+                        columns[j] = Matrix.addVector(Matrix.mulVector(columns[i].copy(), columns[j][i]/columns[i][i]),columns[j].copy())
+            independent = 0
+            for i in range(0, len(columns)):
+                if len(set(columns[i])) != 1 and set(columns[i]) !={0}:
+                    independent+=1   
+            self.rang = independent
+            self.ranged = Matrix(columns, {'rang':self.rang, 'transposed':'in_process'})
+
+
+    def addVector(v1:list, v2:list)->list:
+        result = []
+        for i in range(0, len(v1)):
+            result.append(v1[i]+v2[i])
+        return result
+
+    def mulVector(v1:list, value:int|float)->list:
+        for i in range(0, len(v1)):
+            v1[i]=v1[i]*value
+        return v1
 
 
     def print(self):
