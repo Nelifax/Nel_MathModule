@@ -10,16 +10,18 @@ class Vector():
             'Unit': Vector.is_vector_unit(self)
             }
         
-
+    @staticmethod
     def find_length(vector:'Vector')->int|float:
         length = 0
         for i in range(0, len(vector.values)):
             length+=vector.values[i]**2
         return length**0.5
 
+    @staticmethod
     def find_sinus(vector_A:'Vector', vector_B:'Vector')->float:
         return (vector_A*vector_B)/(vector_A.__flags['Length']*vector_B.__flags['Length'])
 
+    @staticmethod
     def is_vectors_collinear(vector_A:'Vector', vector_B:'Vector')->bool:        
         if len(vector_A.values) != len(vector_B.values):
             raise TimeoutError()
@@ -36,6 +38,7 @@ class Vector():
             return True
         else: return False
 
+    @staticmethod
     def is_vectors_complanar(vectorList:list['Vector'])->bool:
         non_collinear_max = 0
         if len(vectorList) < 3:
@@ -60,6 +63,7 @@ class Vector():
         self.__flags['Unit'] = Vector.is_vector_unit(self)
         return self
 
+    @staticmethod
     def is_vector_unit(vector:'Vector')->bool:
         has_unit = False
         for i in range (0, len(vector.values)):
@@ -75,6 +79,7 @@ class Vector():
                 return False
         return has_unit
     
+    @staticmethod
     def is_vectors_perpendicular(vector_A:'Vector', vector_B:'Vector')->bool:
         if vector_A*vector_B == 0:
             return True

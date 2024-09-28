@@ -1,6 +1,8 @@
 ﻿from objects.Error import *
 from objects.Matrix import Matrix
 
+__all__ = ['matrices_base_test']
+
 def matrices_base_test(reportType:str='full'):
     test_count = 0
     done_count = 0
@@ -245,5 +247,5 @@ def matrices_base_test(reportType:str='full'):
                 print(f'{iterator}) '+test[2] + f': ERROR\n   |\n   └--->{test[3]} not equal!\n')
                 
         print('---------------------------------------------------------\n')
-        print(f'End matrix testing with a mode:{reportType}\nTest count = {test_count}\nDone tests = {done_count}\nErrors = {error_count}')
+        print(f'End matrix testing with a report-mode:{reportType}\nTest count = {test_count}\nDone tests = {done_count}\nErrors = {error_count}')
         print('---------------------------------------------------------\n')
