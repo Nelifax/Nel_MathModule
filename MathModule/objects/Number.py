@@ -195,8 +195,6 @@ class Number():
             other = Number(other)
         numb_a=self.copy()
         numb_b=other.copy()
-        if numb_a<numb_b:
-            return -(numb_b-numb_a)
         if self.__flags['sign'] == '-' and other.__flags['sign'] == '-':
             if (-numb_a) > (-numb_b):
                return -((-numb_a)-(-numb_b))
@@ -207,7 +205,9 @@ class Number():
         if self.__flags['sign'] == '-' and other.__flags['sign'] == '+':
            return -((-numb_a)+numb_b)
         if self.__flags['sign'] == '+' and other.__flags['sign'] == '-':
-           return numb_a+(-numb_b)       
+           return numb_a+(-numb_b)          
+        if numb_a<numb_b:
+            return -(numb_b-numb_a)
         if self.references['float part'] != '0' or other.references['float part'] != '0':
             float_a = self.references['float part']
             float_b = other.references['float part']
@@ -221,7 +221,7 @@ class Number():
             float_a = float_a[::-1]
             float_b = float_b[::-1]
             while len(float_b)<len(float_a):
-                float_b = float_b+'0'                
+                float_b = float_b+'0'               
             reminder=0
             for i in range(0,len(float_a)):
                 if int(float_a[i])<int(float_b[i])+reminder:
@@ -231,7 +231,10 @@ class Number():
                     calculated_float += str((int(float_a[i])-reminder) - int(float_b[i]))
                     reminder=0
             integer_part = Number(self.references['integer part'])-Number(other.references['integer part'])-reminder_last
-            return Number(integer_part.value+'.'+calculated_float[::-1])
+            if reminder_last == 1:
+                return Number(integer_part.value+'.'+calculated_float[:-1][::-1])
+            else:
+                return Number(integer_part.value+'.'+calculated_float[::-1])
         if self.references['integer part'] == '0':
             return -numb_b
         elif other.references['integer part'] == '0':
@@ -280,21 +283,32 @@ class Number():
                return Number('0')
         if self.references['float part'] != '0' or other.references['float part'] != '0':
             float_a = self.references['float part']
-            float_b = other.references['float part']
+            float_b = other.references['float part']            
+            float_part = Number(float_a) + Number(float_b)
+            calculated_float = ''
+            reminder = 0
+            float_a = float_a[::-1]
+            float_b = float_b[::-1]
             if len(float_a) < len(float_b):
                 float_a, float_b = float_b, float_a
-                while len(float_b)<len(float_a):
-                    float_b+='0'
+            while len(float_b)<len(float_a):
+                float_b = '0' + float_b                
             border = len(float_a)
-            float_part = Number(float_a) + Number(float_b)
-            if len(float_part.references['integer part'])>border:
-                reminder = Number(float_part.references['integer part'][0])
-                float_part = float_part.references['integer part'][1:]
+            for i in range(0, len(float_a)):
+                numb = int(float_a[i]) + int(float_b[i])+reminder
+                reminder = int(numb//10)     
+                numb = numb - int(reminder*10)
+                calculated_float += str(numb) 
+            if reminder != 0:
+                calculated_float += str(reminder)
+            if len(calculated_float)>border:
+                reminder = calculated_float[::-1][0]
+                calculated_float = calculated_float[::-1][1:]
             else:
-                float_part = float_part.references['integer part']
+                calculated_float = calculated_float[::-1]
                 reminder=0
             integer_part = Number(self.references['integer part'])+Number(other.references['integer part'])+reminder
-            return Number(integer_part.value+'.'+float_part)
+            return Number(integer_part.value+'.'+calculated_float)
         if self.references['integer part'] == '0':
             return other
         elif other.references['integer part'] == '0':

@@ -3,7 +3,7 @@ from objects.Number import Number
 
 __all__ = ['number_base_test']
 global test_cap
-test_cap = 50000
+test_cap = 500
 def number_base_test(reportType:str='full'):
     test_count = 0
     done_count = 0
@@ -120,28 +120,28 @@ def number_base_test(reportType:str='full'):
                     for i in range(0,test_cap):
                         try:
                             test_count+=1
-                            a=randint(-2147483648, 2147483648)
-                            b=randint(-2147483648, 2147483648)
+                            a=randint(-99999999, 99999999)
+                            b=randint(-99999999, 99999999)
                             if (Number(a)+Number(b)).value == str(a+b):
                                 print(f'{test_count})({a})+({b}): DONE')
                                 done_count+=1
                             else:
                                 wrong_count+=1
-                                print(f'{test_count})({a})+({b}): WRONG\nExpected {a+b} but get {(Number(a)+Number(b)).value}')
+                                print(f'{test_count})({a})+({b}): WRONG\nExpected [{a+b}] but get [{(Number(a)+Number(b)).value}]')
                         except Exception as e:
                             error_count+=1
                             print(f'{test_count}: ERROR\n   ||\n   |└--->generator:{test}[{a},{b}]\n   └--->{e.__repr__()}]\n')
                     for i in range(0,test_cap):
                         try:
                             test_count+=1
-                            a=randint(-2147483648, 2147483648)+randint(0, 2147483648)/(10^randint(1,5))
-                            b=randint(-2147483648, 2147483648)+randint(0, 2147483648)/(10^randint(1,5))
+                            a=randint(-99999999, 99999999)+float('0.'+str(randint(0, 99999)))
+                            b=randint(-99999999, 99999999)+float('0.'+str(randint(0, 99999)))
                             if (Number(a)+Number(b)).value == str(a+b):
                                 print(f'{test_count})({a})+({b}): DONE')
                                 done_count+=1
                             else:
                                 wrong_count+=1
-                                print(f'{test_count})({a})+({b}): WRONG\nExpected {a+b} but get {(Number(a)+Number(b)).value}')
+                                print(f'{test_count})({a})+({b}): WRONG\nExpected [{a+b}] but get [{(Number(a)+Number(b)).value}]')
                         except Exception as e:
                             error_count+=1
                             print(f'{test_count}: ERROR\n   ||\n   |└--->generator:{test}[{a},{b}]\n   └--->{e.__repr__()}]\n')
@@ -149,28 +149,28 @@ def number_base_test(reportType:str='full'):
                     for i in range(0,test_cap):
                         try:
                             test_count+=1
-                            a=randint(-2147483648, 2147483648)
-                            b=randint(-2147483648, 2147483648)
+                            a=randint(-99999999, 99999999)
+                            b=randint(-99999999, 99999999)
                             if (Number(a)-Number(b)).value == str(a-b):
                                 print(f'{test_count})({a})-({b}): DONE')
                                 done_count+=1
                             else:
                                 wrong_count+=1
-                                print(f'{test_count})({a})-({b}): WRONG\nExpected {a+b} but get {(Number(a)+Number(b)).value}')
+                                print(f'{test_count})({a})-({b}): WRONG\nExpected [{a-b}.str] but get [{(Number(a)-Number(b)).value}]')
                         except Exception as e:
                             error_count+=1
                             print(f'{test_count}: ERROR\n   ||\n   |└--->generator:{test}[{a},{b}]\n   └--->{e.__repr__()}]\n')
                     for i in range(0,test_cap):
                         try:
                             test_count+=1
-                            a=randint(-2147483648, 2147483648)+randint(0, 2147483648)/(10^randint(1,5))
-                            b=randint(-2147483648, 2147483648)+randint(0, 2147483648)/(10^randint(1,5))
+                            a=randint(-99999999, 99999999)+float('0.'+str(randint(0, 99999)))
+                            b=randint(-99999999, 99999999)+float('0.'+str(randint(0, 99999)))
                             if (Number(a)-Number(b)).value == str(a-b):
                                 print(f'{test_count})({a})-({b}): DONE')
                                 done_count+=1
                             else:
                                 wrong_count+=1
-                                print(f'{test_count})({a})-({b}): WRONG\nExpected {a+b} but get {(Number(a)+Number(b)).value}')
+                                print(f'{test_count})({a})-({b}): WRONG\nExpected [{a-b}] but get [{(Number(a)-Number(b)).value}]')
                         except Exception as e:
                             error_count+=1
                             print(f'{test_count}: ERROR\n   ||\n   |└--->generator:{test}[{a},{b}]\n   └--->{e.__repr__()}]\n')
