@@ -404,9 +404,20 @@ class Matrix():
     def copy(self)->'Matrix':
         flags = self.__flags.copy()
         flags.update({'calculated':True})
-        copied_matrix = Matrix(self.__generator_attribute, flags)
+        copied_matrix = Matrix(self.values, flags)
         copied_matrix.determinant = self.determinant
         return copied_matrix
+
+    def SVD(self)->tuple['Matrix']:
+        '''
+            returns matrix SVD
+        '''
+        U = self.copy()*self.copy().transpose()
+        V = self.copy().transpose()*self.copy()
+
+    def lyambda_notation(matrix:'Matrix'):
+        pass
+
         
     def __mul__(self, other)->'Matrix':
         resultMatrix = self.copy()
@@ -415,7 +426,6 @@ class Matrix():
             for i in range(0, self.__flags['rows']):
                 for j in range(0,self.__flags['columns']):
                     resultMatrix.values[i][j] = resultMatrix.values[i][j]*other
-            resultMatrix.__generator_attribute = resultMatrix.__generator_attribute + 'x' + str(other)
             resultMatrix.find_determinant()
             resultMatrix.check_factor()
             return resultMatrix
@@ -435,7 +445,7 @@ class Matrix():
             return resultMatrix
         else: raise TimeoutError
 
-    def __pow__(self,value:int)->'Matrix':
+    def __pow__(self, value:int, modulo:int = None)->'Matrix':
         result = self.copy()
         if self.__flags['rows'] != self.__flags['columns']:
             raise MatrixError(MatrixError.MM_error_wrong_line_count)
@@ -452,9 +462,21 @@ class Matrix():
             result.determinant = 1
             return result
         if value == 1:
-            return self
+            if modulo != None:
+                for i in range(0, self.__flags['rows']):
+                    for j in range(0, self.__flags['columns']):
+                        result.values[i][j] = result.values[i][j] % modulo                        
+            result.find_determinant()
+            return result
         if value > 1:
-            return self*(self**(value-1))
+            result = result*(pow(result, value-1, modulo))            
+            if modulo != None:
+                for i in range(0, self.__flags['rows']):
+                    for j in range(0, self.__flags['columns']):
+                        result.values[i][j] = result.values[i][j] % modulo
+            result.find_determinant()
+            return result
+
     
     def __truediv__(self, other)->'Matrix':
         if self.__flags['rows'] != self.__flags['columns']:
@@ -490,5 +512,3 @@ class Matrix():
             if self.get_flags() == other.get_flags() and self.values == other.values:
                 return True
         return False
-
-

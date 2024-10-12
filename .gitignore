@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /MathModule.sln
 /MathModule/MathModule.pyproj
+/MathModule/testing_features.py
