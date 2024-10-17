@@ -1,6 +1,8 @@
 
 __all__ = ['factorize' , 'get_primes']
 
+from objects.Number import Number
+
 def trunc_func(number:float)->int:
     return int(str(number).split('.')[0])
 

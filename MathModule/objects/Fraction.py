@@ -1,67 +1,72 @@
 __all__ = ['Fraction']
 
-class Fraction():
-    def __init__(self, value, flags:dict={}):
-        if type(value)==int:
-            self.numerator = value
-            self.denominator = 1
-        elif type(value) == float:
-            denominator = '1'
-            value = str(value).rstrip('0').split('.')
-            if len(value[1]) == 0:
-                self.numerator = int(value[0])
-                self.denominator = 1
-            else:
-                while len(denominator) <= len(value[1]):
-                    denominator+='0'
-                self.numerator = int(value[0])*int(denominator)+int(value[1])
-                self.denominator = int(denominator)
-        elif type(value) == str:
-            if '/' in value:
-                if '/' in value.replace('/','',1):
-                    raise TimeoutError()
-                value = value.split('/')
-                if '.' in value[0] and '.' not in value[1]:
-                    preFraction = Fraction(float(value[0]))/int(value[1])
-                    self.numerator = preFraction.numerator
-                    self.denominator = preFraction.denominator
-                elif '.' not in value[0] and '.' in value[1]:
-                    preFraction = Fraction(int(value[0]))/Fraction(float(value[1]))
-                    self.numerator = preFraction.numerator
-                    self.denominator = preFraction.denominator
-                elif '.' in value[0] and '.' in value[1]:
-                    preFraction = Fraction(float(value[0]))/Fraction(float(value[1]))                    
-                    self.numerator = preFraction.numerator
-                    self.denominator = preFraction.denominator
-                else:
-                    self.numerator = int(value[0])
-                    self.denominator = int(value[1])
-            elif '.' in value:
-                if '.' in value.replace('.','',1):
-                    raise TimeoutError()
-                preFraction = Fraction(float(value))
-                self.numerator = preFraction.numerator
-                self.denominator = preFraction.denominator
-        elif isinstance(value, Fraction):
-            self.numerator = value.numerator
-            self.denominator = value.denominator
-        elif type(value) == list:
-            if len(value) > 2 or len(value) == 0:
-                raise TimeoutError()
-            if len(value) == 1:
-                preFraction = Fraction(value[0])
-                self.numerator = preFraction.numerator
-                self.denominator = preFraction.denominator
-            elif type(value[0]) == int and type(value[1]) == int:
-                self.numerator = value[0]
-                self.denominator = value[1]
-            elif isinstance(value[0], Fraction) and isinstance(value[1], Fraction):                
-                preFraction = value[0]/value[1]
-                self.numerator = preFraction.numerator
-                self.denominator = preFraction.denominator
+from objects.Number import Number, MM_number_max_float_part
 
-        self.value = self.numerator/self.denominator
-        self.integer = self.numerator//self.denominator
+class Fraction(Number):
+    """
+    provides class to operate with fractions
+    can build fractions from whatever type of data: int|float|list|tuple|str. Best way - list|tuple:[numerator, denominator]
+    """
+    def __init__(self, value:any, flags:dict={}):
+        if isinstance(value, Number):
+            value = value.value
+        if type(value) != list and type(value) != tuple and '/' not in str(value) and '.' not in str(value).replace('.', '', 1):
+            super().__init__(value)
+            self.__flags = self._Number__flags
+            del(self._Number__flags)
+            self.__flags['auto-simplify'] = True
+            self.__flags['float to numerator'] = True
+            self.__flags['parts as Number'] = True
+            if self.references['float part'] == '0':
+                self.references['numerator'] = Number(self.references['integer part'])
+                self.references['denominator'] = Number('1')
+            else:
+                denominator = '1'
+                while len(self.references['float part']) >= len(denominator):
+                    denominator+='0'
+                self.references['numerator'] = Number(self.references['integer part']+self.references['float part'])
+                self.references['denominator'] = Number(denominator)
+            #self.simplify()
+        else:
+            self.__flags={
+                'all references': False,
+                'max float part': MM_number_max_float_part,
+                'exponential view': False,
+                'standart view': False,        
+                'auto-simplify': True,
+                'parts as Number': True,
+                'float to numerator': True,
+                'type': 'integer',  
+                'sign': '+',
+            }
+            self.references={
+                'integer part': '0',
+                'float part': '0',
+                'numerator': '0',
+                'denominator': '1',
+            }
+            if type(value)==str:
+                if not value.replace('/','',1).replace('.', '', 2).replace('-', '', 2).isdigit():
+                    raise TimeoutError()
+                elif '/' in value:
+                    value = value.split('/')
+                for part in value:
+                    if '.' in part.replace('.', '', 1).replace('-', '', 1):
+                        raise TimeoutError()
+            if value[1] == '' or value[1] == '0':
+                raise TimeoutError
+            self.references['numerator'] = Number(value[0])
+            self.references['denominator'] = Number(value[1])
+            '''
+            self.simplify()
+            value = self.references['numerator']/self.references['denominator']
+            self.value = value.value
+            self.references['integer part'] = value.references['integer part']
+            self.references['float part'] = value.references['float part']
+            '''
+
+
+        
 
             
 

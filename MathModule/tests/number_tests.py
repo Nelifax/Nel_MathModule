@@ -1,10 +1,12 @@
 ﻿from random import randint
-from objects.Number import Number
+from objects.Number import Number, MM_number_max_float_part
 
 __all__ = ['number_base_test']
 global test_cap
 test_cap = 500
-def number_base_test(reportType:str='full'):
+def number_base_test(reportType:str='full'): 
+    MM_number_max_float_part = 10
+    print('---Begin number testing---')
     test_count = 0
     done_count = 0
     error_count = 0
@@ -112,68 +114,350 @@ def number_base_test(reportType:str='full'):
                 #done_count+=1
                 #print(f'{test_count}) '+test[1] + f': DONE')
         print('-----Precision tests-----')
-        tests=['add(+)', 'sub(-)', 'lt(<)', 'gt(>)', 'le(<=)', 'ge(>=)', 'eq(==)', 'mul(*)', 'div(/)', 'pow(^)']
+        tests = [
+            #ADD tests
+            ['0', '1', '+', f'0+1 in number notation', 1],
+            ['1', '0', '+',f'1+0 in number notation', 1],
+            ['10', '0.1', '+', f'10+0.1 in number notation', 10.1],
+            ['1010', '1010', '+', f'1010+1010 in number notation', 2020],
+            ['1234.4321', '9876.6789', '+', f'1234.4321+9876.6789 in number notation', 11111.111],
+
+            [0, '1', '+', f'int(0)+1 in number notation', 1],
+            [1, '0', '+', f'int(1)+0 in number notation', 1],
+            [10, '0.1', '+', f'int(10)+0.1 in number notation', 10.1],
+            [1010, '1010', '+', f'int(1010)+1010 in number notation', 2020],
+            [1234.4321, '9876.6789', '+', f'float(1234.4321)+9876.6789 in number notation', 11111.111],
+            
+            ['0', 1, '+', f'0+int(1) in number notation', 1],
+            ['1', 0, '+', f'1+int(0) in number notation', 1],
+            ['10', 0.1, '+', f'10+float(0.1) in number notation', 10.1],
+            ['1010', 1010, '+', f'1010+int(1010) in number notation', 2020],
+            ['1234.4321', 9876.6789, '+', f'1234.4321+float(9876.6789) in number notation', 11111.111],
+
+            ['0', -1, '+', f'0+int(-1) in number notation', -1],
+            ['-1', 0, '+', f'-1+int(0) in number notation', -1],
+            ['-10', -0.1, '+', f'-10+float(-0.1) in number notation', -10.1],
+            ['1010', -1010, '+', f'-1010+int(-1010) in number notation', 0],
+            ['-1234.4321', -9876.6789, '+', f'-1234.4321+float(-9876.6789) in number notation', -11111.111],
+                        
+            ['10', '10', '+', f'numb(summ test): ', 20],
+            ['10', '-10', '+', f'numb(summ test): ', 0],
+            ['-10', '10', '+', f'numb(summ test): ', 0],
+            ['-10', '-10', '+', f'numb(summ test): ', -20],
+                        
+            ['10', '10.1', '+', f'numb(summ test): ', 20.1],
+            ['1.1', '-10.1', '+', f'numb(summ test): ', -9],
+            ['-1.1', '10.1', '+', f'numb(summ test): ', 9],
+            ['-10.11', '-10.99', '+', f'numb(summ test): ', -21.1],
+                        
+            ['10.001', '10.009', '+', f'numb(summ test): ', 20.01],
+            ['10.1001', '-1.0002', '+', f'numb(summ test): ', 9.0999],
+            ['-10.01', '109.91', '+', f'numb(summ test): ', 99.9],
+            ['-10.99999', '-89.00001', '+', f'numb(summ test): ', -100],
+
+            #SUB tests
+            ['0', '1', '-', f'0-1 in number notation', -1],
+            ['1', '0', '-',f'1-0 in number notation', 1],
+            ['10', '0.1', '-', f'10-0.1 in number notation', 9.9],
+            ['1010', '1010', '-', f'1010-1010 in number notation', 0],
+            ['1234.4321', '9876.6789', '-', f'1234.4321-9876.6789 in number notation', -8642.2468],
+
+            [0, '1', '-', f'int(0)-1 in number notation', -1],
+            [1, '0', '-', f'int(1)-0 in number notation', 1],
+            [10, '0.1', '-', f'int(10)-0.1 in number notation', 9.9],
+            [1010, '1010', '-', f'int(1010)-1010 in number notation', 0],
+            [1234.4321, '9876.6789', '-', f'float(1234.4321)-9876.6789 in number notation', -8642.2468],
+            
+            ['0', 1, '-', f'0-int(1) in number notation', -1],
+            ['1', 0, '-', f'1-int(0) in number notation', 1],
+            ['10', 0.1, '-', f'10-float(0.1) in number notation', 9.9],
+            ['1010', 1010, '-', f'1010-int(1010) in number notation', 0],
+            ['1234.4321', 9876.6789, '-', f'1234.4321-float(9876.6789) in number notation', -8642.2468],
+
+            ['0', -1, '-', f'0-int(-1) in number notation', 1],
+            ['-1', 0, '-', f'-1-int(0) in number notation', -1],
+            ['-10', -0.1, '-', f'-10-float(-0.1) in number notation', -9.9],
+            ['1010', -1010, '-', f'-1010-int(-1010) in number notation', 2020],
+            ['-1234.4321', -9876.6789, '-', f'-1234.4321-float(-9876.6789) in number notation', 8642.2468],
+                        
+            ['10', '10', '-', f'numb(sub test): ', 0],
+            ['10', '-10', '-', f'numb(sub test): ', 20],
+            ['-10', '10', '-', f'numb(sub test): ', -20],
+            ['-10', '-10', '-', f'numb(sub test): ', 0],
+                        
+            ['10', '10.1', '-', f'numb(sub test): ', -0.1],
+            ['1.1', '-10.1', '-', f'numb(sub test): ', 11.2],
+            ['-1.1', '10.1', '-', f'numb(sub test): ', -11.2],
+            ['-10.11', '-10.99', '-', f'numb(sub test): ', 0.88],
+                        
+            ['10.001', '10.009', '-', f'numb(sub test): ', -0.008],
+            ['10.1001', '-1.0002', '-', f'numb(sub test): ', 11.1003],
+            ['-10.01', '109.91', '-', f'numb(sub test): ', -119.92],
+            ['-10.99999', '-89.00001', '-', f'numb(sub test): ', 78.00002],
+
+            #MUL tests
+            ['0', '1', '*', f'0*1 in number notation', 0],
+            ['1', '0', '*',f'1*0 in number notation', 0],
+            ['10', '0.1', '*', f'10*0.1 in number notation', 1],
+            ['1010', '1010', '*', f'1010*1010 in number notation', 1020100],
+            ['1234.4321', '9876.6789', '*', f'1234.4321*9876.6789 in number notation', 12192089.47555269],
+
+            [0, '1', '*', f'int(0)*1 in number notation', 0],
+            [1, '0', '*', f'int(1)*0 in number notation', 0],
+            [10, '0.1', '*', f'int(10)*0.1 in number notation', 1],
+            [1010, '1010', '*', f'int(1010)*1010 in number notation', 1020100],
+            [1234.4321, '9876.6789', '*', f'float(1234.4321)*9876.6789 in number notation', 12192089.47555269],
+            
+            ['0', 1, '*', f'0*int(1) in number notation', 0],
+            ['1', 0, '*', f'1*int(0) in number notation', 0],
+            ['10', 0.1, '*', f'10*float(0.1) in number notation', 1],
+            ['1010', 1010, '*', f'1010*int(1010) in number notation', 1020100],
+            ['1234.4321', 9876.6789, '*', f'1234.4321*float(9876.6789) in number notation', 12192089.47555269],
+
+            ['0', -1, '*', f'0*int(*1) in number notation', 0],
+            ['-1', 0, '*', f'-1*int(0) in number notation', 0],
+            ['-10', -0.1, '*', f'-10*float(-0.1) in number notation', 1],
+            ['1010', -1010, '*', f'-1010*int(-1010) in number notation', -1020100],
+            ['-1234.4321', -9876.6789, '*', f'-1234.4321*float(-9876.6789) in number notation', 12192089.47555269],
+                        
+            ['10', '10', '*', f'numb(mul test): ', 100],
+            ['10', '-10', '*', f'numb(mul test): ', -100],
+            ['-10', '10', '*', f'numb(mul test): ', -100],
+            ['-10', '-10', '*', f'numb(mul test): ', 100],
+                        
+            ['10', '10.1', '*', f'numb(mul test): ', 101],
+            ['1.1', '-10.1', '*', f'numb(mul test): ', -11.11],
+            ['-1.1', '10.1', '*', f'numb(mul test): ', -11.11],
+            ['-10.11', '-10.99', '*', f'numb(mul test): ', 111.1089],
+                        
+            ['10.001', '10.009', '*', f'numb(mul test): ', 100.100009],
+            ['10.1001', '-1.0002', '*', f'numb(mul test): ', -10.10212002],
+            ['-10.01', '109.91', '*', f'numb(mul test): ', -1100.1991],
+            ['-10.99999', '-89.00001', '*', f'numb(mul test): ', 978.9992199999],
+
+            #TRUEDIV tests
+            ['0', '1', '/', f'0/1 in number notation', 0],
+            ['10', '0.1', '/', f'10/0.1 in number notation', 100],
+            ['1010', '1010', '/', f'1010/1010 in number notation', 1],
+            ['1234.4321', '9876.6789', '/', f'1234.4321/9876.6789 in number notation', 0.124984533],
+
+            [0, '1', '/', f'int(0)/1 in number notation', 0],
+            [10, '0.1', '/', f'int(10)/0.1 in number notation', 100],
+            [1010, '1010', '/', f'int(1010)/1010 in number notation', 1],
+            [1234.4321, '9876.6789', '/', f'float(1234.4321)/9876.6789 in number notation', 0.124984533],
+            
+            ['0', 1, '/', f'0/int(1) in number notation', 0],
+            ['10', 0.1, '/', f'10/float(0.1) in number notation', 100],
+            ['1010', 1010, '/', f'1010/int(1010) in number notation', 1],
+            ['1234.4321', 9876.6789, '/', f'1234.4321/float(9876.6789) in number notation', 0.124984533],
+
+            ['0', -1, '/', f'0/int(1) in number notation', 0],
+            ['-10', -0.1, '/', f'-10/float(-0.1) in number notation', 100],
+            ['1010', -1010, '/', f'-1010/int(-1010) in number notation', -1],
+            ['-1234.4321', -9876.6789, '/', f'-1234.4321/float(-9876.6789) in number notation', 0.1249845330],
+                        
+            ['10', '10', '/', f'numb(truediv test): ', 1],
+            ['10', '-10', '/', f'numb(truediv test): ', -1],
+            ['-10', '10', '/', f'numb(truediv test): ', -1],
+            ['-10', '-10', '/', f'numb(truediv test): ', 1],
+            ['10023006', '1002', '/', f'numb(truediv test): ', 10003],
+
+            ['74.148222', '-74', '/', f'numb(truediv test): ', -1.002003],
+            ['-0.1', '256', '/', f'numb(truediv test): ', -0.000390625],
+            ['12193263111.2635269', '-1.23456789', '/', f'numb(truediv test): ', -9876543210],
+            ['12193263111.2635269', '-9876543210', '/', f'numb(truediv test): ', -1.23456789],
+            ['98765', '1.234', '/', f'numb(truediv test): ', 80036.4667747164],
+            ['-1250000', '-500', '/', f'numb(truediv test): ', 2500],
+            ['2.000200220020002', '2.00020002', '/', f'numb(truediv test): ', 1.0000001],
+                        
+            ['10', '10.1', '/', f'numb(truediv test): ', 0.9900990099],
+            ['1.1', '-10.1', '/', f'numb(truediv test): ', -0.1089108911],
+            ['-1.1', '10.1', '/', f'numb(truediv test): ', -0.1089108911],
+            ['-10.11', '-10.99', '/', f'numb(truediv test): ', 0.9199272066],
+                        
+            ['10.001', '10.009', '/', f'numb(truediv test): ', 0.9992007194],
+            ['10.1001', '-1.0002', '/', f'numb(truediv test): ', -10.0980803839],
+            ['-10.01', '109.91', '/', f'numb(truediv test): ', -0.0910745155],
+            ['-10.99999', '-89.00001', '/', f'numb(truediv test): ', 0.1235953794],
+
+            #FLOORDIV tests
+            ['0', '1', '//', f'0//1 in number notation', 0],
+            ['10', '0.1', '//', f'10//0.1 in number notation', 100],
+            ['1010', '1010', '//', f'1010//1010 in number notation', 1],
+            ['1234.4321', '9876.6789', '//', f'1234.4321//9876.6789 in number notation', 0],
+
+            [0, '1', '//', f'int(0)//1 in number notation', 0],
+            [10, '0.1', '//', f'int(10)//0.1 in number notation', 100],
+            [1010, '1010', '//', f'int(1010)//1010 in number notation', 1],
+            [1234.4321, '9876.6789', '//', f'float(1234.4321)//9876.6789 in number notation', 0],
+            
+            ['0', 1, '//', f'0//int(1) in number notation', 0],
+            ['10', 0.1, '//', f'10//float(0.1) in number notation', 100],
+            ['1010', 1010, '//', f'1010//int(1010) in number notation', 1],
+            ['1234.4321', 9876.6789, '//', f'1234.4321//float(9876.6789) in number notation', 0],
+
+            ['0', -1, '//', f'0//int(1) in number notation', 0],
+            ['-10', -0.1, '//', f'-10//float(-0.1) in number notation', 100],
+            ['1010', -1010, '//', f'-1010//int(-1010) in number notation', -1],
+            ['-1234.4321', -9876.6789, '//', f'-1234.4321//float(-9876.6789) in number notation', 0],
+                        
+            ['10', '10', '//', f'numb(floordiv test): ', 1],
+            ['10', '-10', '//', f'numb(floordiv test): ', -1],
+            ['-10', '10', '//', f'numb(floordiv test): ', -1],
+            ['-10', '-10', '//', f'numb(floordiv test): ', 1],
+            ['10023006', '1002', '//', f'numb(floordiv test): ', 10003],
+
+            ['74.148222', '-74', '//', f'numb(floordiv test): ', -1],
+            ['-0.1', '256', '//', f'numb(floordiv test): ', 0],
+            ['12193263111.2635269', '-1.23456789', '//', f'numb(floordiv test): ', -9876543210],
+            ['12193263111.2635269', '-9876543210', '//', f'numb(floordiv test): ', -1],
+            ['98765', '1.234', '//', f'numb(floordiv test): ', 80036],
+            ['-1250000', '-500', '//', f'numb(floordiv test): ', 2500],
+            ['2.000200220020002', '2.00020002', '//', f'numb(floordiv test): ', 1],
+                        
+            ['10', '10.1', '//', f'numb(floordiv test): ', 0],
+            ['1.1', '-10.1', '//', f'numb(floordiv test): ', 0],
+            ['-10.11', '-10.99', '//', f'numb(floordiv test): ', 0],
+                        
+            ['10.001', '10.009', '//', f'numb(floordiv test): ', 0],
+            ['10.1001', '-1.0002', '//', f'numb(floordiv test): ', -10],
+            ['-10.01', '109.91', '//', f'numb(floordiv test): ', 0],
+            ['-10.99999', '-89.00001', '//', f'numb(floordiv test): ', 0],
+
+            #MOD tests
+            ['0', '1', '%', f'0%1 in number notation', 0],
+            ['10', '0.1', '%', f'10%0.1 in number notation', 0],
+            ['1010', '1010', '%', f'1010%1010 in number notation', 0],
+            ['1234.4321', '9876.6789', '%', f'1234.4321%9876.6789 in number notation', 1234.4321],
+
+            [0, '1', '%', f'int(0)%1 in number notation', 0],
+            [10, '0.1', '%', f'int(10)%0.1 in number notation', 0],
+            [1010, '1010', '%', f'int(1010)%1010 in number notation', 0],
+            [1234.4321, '9876.6789', '%', f'float(1234.4321)%9876.6789 in number notation', 1234.4321],
+            
+            ['0', 1, '%', f'0%int(1) in number notation', 0],
+            ['10', 0.1, '%', f'10%float(0.1) in number notation', 0],
+            ['1010', 1010, '%', f'1010%int(1010) in number notation', 0],
+            ['1234.4321', 9876.6789, '%', f'1234.4321+float(9876.6789) in number notation', 1234.4321],
+
+            ['0', -1, '%', f'0%int(1) in number notation', 0],
+            ['-10', -0.1, '%', f'-10%float(-0.1) in number notation', 0],
+            ['1010', -1010, '%', f'-1010%int(-1010) in number notation', 0],
+            ['-1234.4321', -9876.6789, '%', f'-1234.4321%float(-9876.6789) in number notation', -1234.4321],
+                        
+            ['10', '10', '%', f'numb(module test): ', 0],
+            ['10', '-10', '%', f'numb(module test): ', 0],
+            ['-10', '10', '%', f'numb(module test): ', 0],
+            ['-10', '-10', '%', f'numb(module test): ', 0],
+            ['10023006', '1002', '%', f'numb(module test): ', 0],
+
+            ['74.148222', '-74', '%', f'numb(module test): ', 0.148222],
+            ['-0.1', '256', '%', f'numb(module test): ', 255.9],
+            ['12193263111.263526', '-987654321', '%', f'numb(module test): ', 341411259.263526],
+            ['98765', '1.234', '%', f'numb(module test): ', 0.576],
+            ['-1250000', '-500', '%', f'numb(module test): ', 0],
+                        
+            ['10', '10.1', '%', f'numb(module test): ', 10],
+            ['1.1', '-10.1', '%', f'numb(module test): ', 1.1],
+            ['-10.11', '-10.99', '%', f'numb(module test): ', -10.11],
+                        
+            ['10.001', '10.009', '%', f'numb(module test): ', 10.001],
+            ['10.1001', '-1.0002', '%', f'numb(module test): ', 0.0981],
+            ['-10.01', '109.91', '%', f'numb(module test): ', 99.9],
+            ['-10.99999', '-89.00001', '%', f'numb(module test): ', -10.99999],
+
+            #SQRT tests
+            ['1', '0', 'sqrt', f'finding a sqrt of int(1) not periodic', 1],
+            ['4', '0', 'sqrt', f'finding a sqrt of int(4) not periodic', 2],
+            ['9', '0', 'sqrt', f'finding a sqrt of int(9) not periodic', 3],
+            ['16', '0', 'sqrt', f'finding a sqrt of int(16) not periodic', 4],
+            ['25', '0', 'sqrt', f'finding a sqrt of int(25) not periodic', 5],
+            ['3600', '0', 'sqrt', f'finding a sqrt of int(3600) not periodic', 60],
+            ['100000000', '0', 'sqrt', f'finding a sqrt of int(100000000) not periodic', 10000],
+            ['0.25', '0', 'sqrt', f'finding a sqrt of float(0.25) not periodic', 0.5],
+            ['0.0001', '0', 'sqrt', f'finding a sqrt of float(0.0001) not periodic', 0.01],
+            ['2.56', '0', 'sqrt', f'finding a sqrt of float(2.56) not periodic', 1.6],
+            ['144.72330601', '0', 'sqrt', f'finding a sqrt of float(144.72330601) not periodic', 12.0301],
+            ['100.500625', '0', 'sqrt', f'finding a sqrt of float(100.500625) not periodic', 10.025],
+            ['9.01440576', '0', 'sqrt', f'finding a sqrt of float(9.01440576) not periodic', 3.0024],
+            ['2', '0', 'sqrt', f'finding a sqrt of int(2) periodic', 1.4142135624],
+            ['3', '0', 'sqrt', f'finding a sqrt of int(3) periodic', 1.7320508076],
+            ['5', '0', 'sqrt', f'finding a sqrt of int(5) periodic', 2.2360679775],
+            ['115', '0', 'sqrt', f'finding a sqrt of int(115) periodic', 10.7238052948],
+            ['123456789', '0', 'sqrt', f'finding a sqrt of int(123456789) periodic', 11111.1110605556],
+            ['987654321', '0', 'sqrt', f'finding a sqrt of int(987654321) periodic', 31426.9680529319],
+            ['102030401', '0', 'sqrt', f'finding a sqrt of int(102030405) periodic', 10101.0100980051],            
+            ['101010101', '0', 'sqrt', f'finding a sqrt of int(101010101) periodic', 10050.3781520896],
+            ]#TODO, pow(**), nroot(nroot)
+        last_testing=''
         for test in tests:            
-            print(f'---Precision test block[{test}]. Start {2*test_cap}[{test_cap}int/{test_cap}float] tests---')
-            match test:
-                case 'add(+)':
-                    for i in range(0,test_cap):
-                        try:
-                            test_count+=1
-                            a=randint(-99999999, 99999999)
-                            b=randint(-99999999, 99999999)
-                            if (Number(a)+Number(b)).value == str(a+b):
-                                print(f'{test_count})({a})+({b}): DONE')
-                                done_count+=1
-                            else:
-                                wrong_count+=1
-                                print(f'{test_count})({a})+({b}): WRONG\nExpected [{a+b}] but get [{(Number(a)+Number(b)).value}]')
-                        except Exception as e:
-                            error_count+=1
-                            print(f'{test_count}: ERROR\n   ||\n   |└--->generator:{test}[{a},{b}]\n   └--->{e.__repr__()}]\n')
-                    for i in range(0,test_cap):
-                        try:
-                            test_count+=1
-                            a=randint(-99999999, 99999999)+float('0.'+str(randint(0, 99999)))
-                            b=randint(-99999999, 99999999)+float('0.'+str(randint(0, 99999)))
-                            if (Number(a)+Number(b)).value == str(a+b):
-                                print(f'{test_count})({a})+({b}): DONE')
-                                done_count+=1
-                            else:
-                                wrong_count+=1
-                                print(f'{test_count})({a})+({b}): WRONG\nExpected [{a+b}] but get [{(Number(a)+Number(b)).value}]')
-                        except Exception as e:
-                            error_count+=1
-                            print(f'{test_count}: ERROR\n   ||\n   |└--->generator:{test}[{a},{b}]\n   └--->{e.__repr__()}]\n')
-                case 'sub(-)':
-                    for i in range(0,test_cap):
-                        try:
-                            test_count+=1
-                            a=randint(-99999999, 99999999)
-                            b=randint(-99999999, 99999999)
-                            if (Number(a)-Number(b)).value == str(a-b):
-                                print(f'{test_count})({a})-({b}): DONE')
-                                done_count+=1
-                            else:
-                                wrong_count+=1
-                                print(f'{test_count})({a})-({b}): WRONG\nExpected [{a-b}.str] but get [{(Number(a)-Number(b)).value}]')
-                        except Exception as e:
-                            error_count+=1
-                            print(f'{test_count}: ERROR\n   ||\n   |└--->generator:{test}[{a},{b}]\n   └--->{e.__repr__()}]\n')
-                    for i in range(0,test_cap):
-                        try:
-                            test_count+=1
-                            a=randint(-99999999, 99999999)+float('0.'+str(randint(0, 99999)))
-                            b=randint(-99999999, 99999999)+float('0.'+str(randint(0, 99999)))
-                            if (Number(a)-Number(b)).value == str(a-b):
-                                print(f'{test_count})({a})-({b}): DONE')
-                                done_count+=1
-                            else:
-                                wrong_count+=1
-                                print(f'{test_count})({a})-({b}): WRONG\nExpected [{a-b}] but get [{(Number(a)-Number(b)).value}]')
-                        except Exception as e:
-                            error_count+=1
-                            print(f'{test_count}: ERROR\n   ||\n   |└--->generator:{test}[{a},{b}]\n   └--->{e.__repr__()}]\n')
+            test_count+=1
+            if type(test[0])==str:
+                a=Number(test[0])
+            else:
+                a=test[0]
+            if type(test[1])==str:
+                b=Number(test[1])
+            else:
+                b=test[1]
+            testing = test[2]
+            if last_testing != testing:
+                print(f'---Test [{test[2]}] operation---')
+                last_testing = testing
+            match test[2]:
+                case '+':                    
+                    try:
+                        c=a+b                        
+                    except Exception as e:
+                        error_count+=1
+                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                case '-':
+                    try:
+                        c=a-b                        
+                    except Exception as e:
+                        error_count+=1
+                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                case '*':
+                    try:
+                        c=a*b                        
+                    except Exception as e:
+                        error_count+=1
+                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                case '/':
+                    try:
+                        c=a/b   
+                    except Exception as e:
+                        error_count+=1
+                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                case '//':
+                    try:
+                        c=a//b   
+                    except Exception as e:
+                        raise e
+                        error_count+=1
+                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                case '%':
+                    try:
+                        c=a%b   
+                    except Exception as e:
+                        raise e
+                        error_count+=1
+                case 'sqrt':
+                    try:
+                        c=a.sqrt()  
+                    except Exception as e:
+                        raise e
+                        error_count+=1
+                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+            if c==test[-1]:
+                print(f'{test_count}) '+test[3]+':DONE')
+                done_count+=1
+            else:
+                print(f'{test_count}) '+test[3]+':WRONG')
+                wrong_count+=1
+                print(f' ->generator: {test[0]}{test[2]}{test[1]}')
+                print(f'   ->expected: {test[-1]}; but get: {c.value}')
+
             
         print('---------------------------------------------------------\n')
         print(f'End Number testing with a report-mode:{reportType}\nTest count = {test_count}\nDone tests = {done_count}\nWrong tests = {wrong_count}\nErrors = {error_count}')
