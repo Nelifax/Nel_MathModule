@@ -1,5 +1,5 @@
-﻿from objects.Error import *
-from objects.Matrix import Matrix
+﻿from NelMath.objects.Error import *
+from NelMath.objects.Matrix import Matrix
 
 __all__ = ['matrices_base_test']
 

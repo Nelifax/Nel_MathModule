@@ -1,56 +1,49 @@
 
 __all__ = ['factorize' , 'get_primes']
 
-from objects.Number import Number
-
-def trunc_func(number:float)->int:
-    return int(str(number).split('.')[0])
+from NelMath.objects.Number import Number
+from math import isqrt
 
 def squfof(number:int)->list:
     '''
         returns untrivial divisor for number, else return number if it has no untrivial divisors
-        it's squfof implementation
+        it's squfof implementation of https://homes.cerias.purdue.edu/~ssw/squfof.pdf
     '''
-    from .number_functions import is_full_square, trunc
-    if is_full_square(number):
-        return trunc(number**0.5)
+    number=Number(number)
+    if number.sqrt().references['float part'] == '0':
+        return number.sqrt()
     if number%4==1:
         D = 2*number
     else:
         D = number
-    S = trunc(D**0.5)
-    Q_d = 1
-    P = S
+    S = Number(D.sqrt().references['integer part'])
+    Q_d = Number(1)
+    P = S.copy()
     Q = D-(P*P)
-    L = trunc(2*((2*(D**0.5))**0.5))
+    L = Number((2*((2*D.sqrt()).sqrt())).references['integer part'])
     B = 2*L
-    i=2
+    i=0
     queue = []
-    #2a
     is_skipped = True
     while is_skipped:
         if i>B: return 1
-        q = trunc((S+P)/Q)
+        q = Number(((S+P)/Q).references['integer part'])
         P_s = q*Q-P
-        #2b
         if Q<=L:
             if Q%2 == 0:
                 queue.append((Q/2, P%(Q/2)))
             elif Q<=L/2:
                 queue.append((Q, P%Q))
-        #2c
         t = Q_d+q*(P-P_s)
-        Q_d = Q
-        Q = t
-        P = P_s
-        #2d
-        if i % 2 == 1 or not is_full_square(Q):
+        Q_d = Q.copy()
+        Q = t.copy()
+        P = P_s.copy()
+        if i % 2 == 1 or isqrt(int(Q))**2-Q != 0:
             i += 1
-            #this is 2e part
             continue
         else:
-            #is_skipped = False
-            r = trunc(Q**0.5)
+            r = Number(Q.sqrt().references['integer part'])
+            is_skipped = False
             for pair in queue:
                 if pair[0] == 1 and r == 1:
                     return number
@@ -59,51 +52,62 @@ def squfof(number:int)->list:
                         is_skipped = True
                         queue = queue[queue.index(pair)+1:]
                         i += +1
-                        continue
-        #print(f'---------------------F_{i}---------------------')
-        #print(f'i={i}, Q_i-1={(-1)**(i-1)*Q_d}, 2P_i=2*{P}, Q_i={(-1)**i*Q}')
-        if is_full_square(Q): break
-    
+                        continue    
     Q_d = r
-    P = P+r*trunc((S-P)/r)
+    P = P+r*Number(((S-P)/r).references['integer part'])
     Q = (D-P*P)/Q_d
-    i=1
+    iterator_border=i
+    i=0
     while True:
-        q = trunc((S+P)/Q)
+        q = Number(((S+P)/Q).references['integer part'])
         P_s = q*Q-P        
         if P==P_s:
             break
+        if i>L:
+            return 1
         t = Q_d+q*(P-P_s)
-        Q_d = Q
-        Q = t
-        P = P_s        
+        Q_d = Q.copy()
+        Q = t.copy()
+        P = P_s.copy()        
         i+=1
-        #print(f'---------------------G_{i}---------------------')
-        #print(f'i={i}, Q_i-1={(-1)**(i-1)*Q}, 2P_i=2*{P}, Q_i={(-1)**i*Q_d}')
-    return int(Q) if Q%2==1 else int(Q/2)
+    return Q.copy() if Q%2==1 else Q.copy()/2
 
-def factorize(number:int)->int:
+def factorize(number:Number|int)->int:
+    '''
+    provides number factorization. returns an array with all factors of number (with duplication). Uses simple primal-division and squfof methods.
+    parameters:
+        number(int|Number) - number to factorize
+    '''
     primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997]
-    #print(primes)
+    if not isinstance(number, Number):
+        number=Number(number)
     if number<0:
-        number = -1*number
+        number = -number
     factors = []
+    for prime in primes:
+        while number%prime==0:
+            number = number/prime
+            factors.append(prime)    
+    if number == 1:
+        return factors
     while number != 1:
         factor = squfof(number)
         if factor == 1:
             factors.append(number)
             number = 1
             continue
-        number = int(number/factor)
-        #print(f'FACTOR:{factor}<--->NUMBER:{number}')
+        number = number/factor
         factors.append(factor)
     is_factors_simple = False
     while not is_factors_simple:
         is_factors_simple = True
         for index in range(0, len(factors)):
-            result = squfof(factors[index])
+            if factors[index] not in primes:
+                result = squfof(factors[index])
+            else:
+                continue
             if result != 1 and result != factors[index]:
-                factors.append(result)
+                factors.append(int(result))
                 factors[index] = int(factors[index]/result)
                 is_factors_simple = False
     for index in range(0, len(factors)):
@@ -112,6 +116,9 @@ def factorize(number:int)->int:
             while factors[index] % prime == 0:
                 factors.append(prime)
                 factors[index] = int(factors[index]/prime)
+    for factor in factors:
+        if isinstance(factor, Number):
+            factors[factors.index(factor)]=int(factor)
             
     factors.sort()
     if 1 in factors:

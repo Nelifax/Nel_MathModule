@@ -1,5 +1,5 @@
-﻿from objects.Error import *
-from objects.Fraction import Fraction
+﻿from NelMath.objects.Error import *
+from NelMath.objects.Fraction import Fraction
 
 __all__ = ['fractions_base_test']
 

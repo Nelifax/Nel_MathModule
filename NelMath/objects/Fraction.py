@@ -1,6 +1,6 @@
 __all__ = ['Fraction']
 
-from objects.Number import Number, MM_number_max_float_part
+from .Number import Number, MM_number_max_float_part
 
 class Fraction(Number):
     """
@@ -57,6 +57,7 @@ class Fraction(Number):
                 raise TimeoutError
             self.references['numerator'] = Number(value[0])
             self.references['denominator'] = Number(value[1])
+            self.standartize()
             '''
             self.simplify()
             value = self.references['numerator']/self.references['denominator']
@@ -64,7 +65,10 @@ class Fraction(Number):
             self.references['integer part'] = value.references['integer part']
             self.references['float part'] = value.references['float part']
             '''
-
+    def standartize(self)->'Fraction':
+        while self.references['denominator'].references['float part']!='0' or self.references['numerator'].references['float part']!='0':
+            self.references['denominator'] *= 10
+            self.references['numerator'] *= 10
 
         
 

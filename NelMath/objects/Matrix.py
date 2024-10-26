@@ -1,4 +1,4 @@
-from objects.Error import MatrixError
+from .Error import MatrixError
 
 __all__=['MM_matrix_manual', 'Matrix']
 

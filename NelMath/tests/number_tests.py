@@ -1,5 +1,5 @@
 ﻿from random import randint
-from objects.Number import Number, MM_number_max_float_part
+from NelMath.objects.Number import Number, MM_number_max_float_part
 
 __all__ = ['number_base_test']
 global test_cap
@@ -386,8 +386,21 @@ def number_base_test(reportType:str='full'):
             ['115', '0', 'sqrt', f'finding a sqrt of int(115) periodic', 10.7238052948],
             ['123456789', '0', 'sqrt', f'finding a sqrt of int(123456789) periodic', 11111.1110605556],
             ['987654321', '0', 'sqrt', f'finding a sqrt of int(987654321) periodic', 31426.9680529319],
-            ['102030401', '0', 'sqrt', f'finding a sqrt of int(102030405) periodic', 10101.0100980051],            
+            ['102030401', '0', 'sqrt', f'finding a sqrt of int(102030405) periodic', 10101.009900005],            
             ['101010101', '0', 'sqrt', f'finding a sqrt of int(101010101) periodic', 10050.3781520896],
+
+            #NROOT tests
+            ['1', '2', 'nroot', f'finding a nroot(2) of int(1=1^2) not periodic', 1],
+            ['1', '33', 'nroot', f'finding a nroot(33) of int(1=1^33) not periodic', 1],
+            ['16', '4', 'nroot', f'finding a nroot(4) of int(16=2^4) not periodic', 2],
+            ['1024', '10', 'nroot', f'finding a nroot(10) of int(1024=2^10) not periodic', 2],
+            ['81', '2', 'nroot', f'finding a nroot(2) of int(81=9^2) not periodic', 9],
+            ['27', '3', 'nroot', f'finding a nroot(3) of int(27=3^3) not periodic', 3],
+            ['625', '4', 'nroot', f'finding a nroot(4) of int(625=5^3) not periodic', 5],
+            ['134217728', '27', 'nroot', f'finding a nroot(27) of int(134217728=2^27) not periodic', 2],
+            ['2', '3', 'nroot', f'finding a nroot(3) of int(2) periodic', 1.2599210499],
+            ['313', '5', 'nroot', f'finding a nroot(5) of int(313) periodic', 3.1557956087],
+            ['5', '31', 'nroot', f'finding a nroot(31) of int(5) periodic', 1.0532886867],
             ]#TODO, pow(**), nroot(nroot)
         last_testing=''
         for test in tests:            
@@ -404,38 +417,39 @@ def number_base_test(reportType:str='full'):
             if last_testing != testing:
                 print(f'---Test [{test[2]}] operation---')
                 last_testing = testing
+            print(f'{test_count}) '+test[3]+':', end='')
             match test[2]:
                 case '+':                    
                     try:
                         c=a+b                        
                     except Exception as e:
                         error_count+=1
-                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                        print(f' ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
                 case '-':
                     try:
                         c=a-b                        
                     except Exception as e:
                         error_count+=1
-                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                        print(f' ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
                 case '*':
                     try:
                         c=a*b                        
                     except Exception as e:
                         error_count+=1
-                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                        print(f' ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
                 case '/':
                     try:
                         c=a/b   
                     except Exception as e:
                         error_count+=1
-                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                        print(f' ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
                 case '//':
                     try:
                         c=a//b   
                     except Exception as e:
                         raise e
                         error_count+=1
-                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                        print(f' ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
                 case '%':
                     try:
                         c=a%b   
@@ -448,12 +462,19 @@ def number_base_test(reportType:str='full'):
                     except Exception as e:
                         raise e
                         error_count+=1
-                        print(f'{test_count}) '+test[3] + f': ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                        print(f' ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                case 'nroot':
+                    try:
+                        c=a.nroot(b)  
+                    except Exception as e:
+                        raise e
+                        error_count+=1
+                        print(f' ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
             if c==test[-1]:
-                print(f'{test_count}) '+test[3]+':DONE')
+                print('DONE')
                 done_count+=1
             else:
-                print(f'{test_count}) '+test[3]+':WRONG')
+                print(f' WRONG')
                 wrong_count+=1
                 print(f' ->generator: {test[0]}{test[2]}{test[1]}')
                 print(f'   ->expected: {test[-1]}; but get: {c.value}')

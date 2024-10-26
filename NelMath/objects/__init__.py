@@ -7,3 +7,4 @@ from .Error import *
 from .Number import *
 from .Fraction import *
 from .Random import *
+from .Constant import *
