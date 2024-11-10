@@ -1,4 +1,4 @@
-from .Error import MatrixError
+from NelMath.objects.errors.Error import MatrixError
 
 __all__=['MM_matrix_manual', 'Matrix']
 
@@ -206,7 +206,7 @@ class Matrix():
                     self.determinant = self.determinant+self.find_addition(0,i)*self.values[0][i]
     
     def find_minor(self, row:int|list, column:int|list)->'Matrix':
-        newMatrixNumber = ''
+        newMatrixRational = ''
         newMatrixValues = []
         if type(row)==list and type(column)==list:
             for i in range(0, len(row)):
@@ -242,7 +242,7 @@ class Matrix():
                         addJ = 1
                         continue
                     else:
-                        newMatrixNumber+=str(self.values[i][j])+','
+                        newMatrixRational+=str(self.values[i][j])+','
                         newMatrixValues[i-addI][j-addJ] = self.values[i][j]
                         if '.' in str(self.values[i][j]):
                             is_parsing_int = False
@@ -253,7 +253,7 @@ class Matrix():
         newMatrixRules.update({'calculated':False})
         newMatrixRules.update({'inverted':False})
         if is_parsing_int:
-            newMatrix = Matrix(newMatrixNumber[:-1], newMatrixRules)
+            newMatrix = Matrix(newMatrixRational[:-1], newMatrixRules)
         else:
             newMatrix = Matrix(newMatrixValues, newMatrixRules)
         return newMatrix

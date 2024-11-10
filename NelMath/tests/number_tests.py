@@ -1,5 +1,5 @@
 ﻿from random import randint
-from NelMath.objects.Number import Number, MM_number_max_float_part
+from NelMath.objects.math_base.Rational import Rational, MM_number_max_float_part
 
 __all__ = ['number_base_test']
 global test_cap
@@ -14,83 +14,83 @@ def number_base_test(reportType:str='full'):
     if reportType == 'full':
         print('-----Generation tests-----')
         tests = [
-            [2,f'Number generation with int(only 1 digit)', {'integer part': '2', 'float part': '0'}, '2', '+'], 
-            [12,f'Number generation with int(2 digits)', {'integer part': '12', 'float part': '0'}, '2', '+'], 
-            [2147483648,f'Number generation with int(2^31)', {'integer part': '2147483648', 'float part': '0'}, '2', '+'], 
-            [2147483649,f'Number generation with int(2^31+1)', {'integer part': '2147483649', 'float part': '0'}, '2', '+'], 
-            [18446744073709551616,f'Number generation with int(2^64)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '+'],
-            [-2,f'Number generation with negative int(only 1 digit)', {'integer part': '2', 'float part': '0'}, '2', '-'], 
-            [-12,f'Number generation with negative int(2 digits)', {'integer part': '12', 'float part': '0'}, '2', '-'], 
-            [-2147483648,f'Number generation with negative int(2^31)', {'integer part': '2147483648', 'float part': '0'}, '2', '-'], 
-            [-2147483649,f'Number generation with negative int(2^31+1)', {'integer part': '2147483649', 'float part': '0'}, '2', '-'], 
-            [-18446744073709551616,f'Number generation with negative int(2^64)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '-'],
+            [2,f'Rational generation with int(only 1 digit)', {'integer part': '2', 'float part': '0'}, '2', '+'], 
+            [12,f'Rational generation with int(2 digits)', {'integer part': '12', 'float part': '0'}, '2', '+'], 
+            [2147483648,f'Rational generation with int(2^31)', {'integer part': '2147483648', 'float part': '0'}, '2', '+'], 
+            [2147483649,f'Rational generation with int(2^31+1)', {'integer part': '2147483649', 'float part': '0'}, '2', '+'], 
+            [18446744073709551616,f'Rational generation with int(2^64)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '+'],
+            [-2,f'Rational generation with negative int(only 1 digit)', {'integer part': '2', 'float part': '0'}, '2', '-'], 
+            [-12,f'Rational generation with negative int(2 digits)', {'integer part': '12', 'float part': '0'}, '2', '-'], 
+            [-2147483648,f'Rational generation with negative int(2^31)', {'integer part': '2147483648', 'float part': '0'}, '2', '-'], 
+            [-2147483649,f'Rational generation with negative int(2^31+1)', {'integer part': '2147483649', 'float part': '0'}, '2', '-'], 
+            [-18446744073709551616,f'Rational generation with negative int(2^64)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '-'],
 
-            ['2',f'Number generation with str(only 1 digit)', {'integer part': '2', 'float part': '0'}, '2', '+'], 
-            ['12',f'Number generation with str(2 digits)', {'integer part': '12', 'float part': '0'}, '2', '+'], 
-            ['2147483648',f'Number generation with str(2^31)', {'integer part': '2147483648', 'float part': '0'}, '2', '+'], 
-            ['2147483649',f'Number generation with str(2^31+1)', {'integer part': '2147483649', 'float part': '0'}, '2', '+'], 
-            ['18446744073709551616',f'Number generation with str(2^64)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '+'],
-            ['-2',f'Number generation with str(only 1 digit negative)', {'integer part': '2', 'float part': '0'}, '2', '-'], 
-            ['-12',f'Number generation with str(2 digits negative)', {'integer part': '12', 'float part': '0'}, '2', '-'], 
-            ['-2147483648',f'Number generation with str(2^31 negative)', {'integer part': '2147483648', 'float part': '0'}, '2', '-'], 
-            ['-2147483649',f'Number generation with str(2^31+1 negative)', {'integer part': '2147483649', 'float part': '0'}, '2', '-'], 
-            ['-18446744073709551616',f'Number generation with str(2^64 negative)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '-'], 
+            ['2',f'Rational generation with str(only 1 digit)', {'integer part': '2', 'float part': '0'}, '2', '+'], 
+            ['12',f'Rational generation with str(2 digits)', {'integer part': '12', 'float part': '0'}, '2', '+'], 
+            ['2147483648',f'Rational generation with str(2^31)', {'integer part': '2147483648', 'float part': '0'}, '2', '+'], 
+            ['2147483649',f'Rational generation with str(2^31+1)', {'integer part': '2147483649', 'float part': '0'}, '2', '+'], 
+            ['18446744073709551616',f'Rational generation with str(2^64)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '+'],
+            ['-2',f'Rational generation with str(only 1 digit negative)', {'integer part': '2', 'float part': '0'}, '2', '-'], 
+            ['-12',f'Rational generation with str(2 digits negative)', {'integer part': '12', 'float part': '0'}, '2', '-'], 
+            ['-2147483648',f'Rational generation with str(2^31 negative)', {'integer part': '2147483648', 'float part': '0'}, '2', '-'], 
+            ['-2147483649',f'Rational generation with str(2^31+1 negative)', {'integer part': '2147483649', 'float part': '0'}, '2', '-'], 
+            ['-18446744073709551616',f'Rational generation with str(2^64 negative)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '-'], 
 
-            [1.0,f'Number generation with float(only 1 digit point 0)', {'integer part': '1', 'float part': '0'}, '2', '+'], 
-            [12.0,f'Number generation with float(2 digits point 0)', {'integer part': '12', 'float part': '0'}, '2', '+'], 
-            [2147483648.0,f'Number generation with float(2^31 point 0)', {'integer part': '2147483648', 'float part': '0'}, '2', '+'], 
-            [-2147483649.0,f'Number generation with float(2^31+1 point 0)', {'integer part': '2147483649', 'float part': '0'}, '2', '-'], 
-            [1.1,f'Number generation with float(only 1 digit point 1 digit)', {'integer part': '1', 'float part': '1'}, '2', '+'], 
-            [12.2,f'Number generation with float(2 digits point 1 digit)', {'integer part': '12', 'float part': '2'}, '2', '+'], 
-            [2147483648.3,f'Number generation with float(2^31 point 1 digit)', {'integer part': '2147483648', 'float part': '3'}, '2', '+'], 
-            [-2147483649.4,f'Number generation with float(2^31+1 point 1 digit)', {'integer part': '2147483649', 'float part': '4'}, '2', '-'], 
-            [1.12,f'Number generation with float(only 1 digit point 2 digits)', {'integer part': '1', 'float part': '12'}, '2', '+'], 
-            [12.99,f'Number generation with float(2 digits point 2 digits)', {'integer part': '12', 'float part': '99'}, '2', '+'], 
-            [2147483648.32,f'Number generation with float(2^31 point 2 digits)', {'integer part': '2147483648', 'float part': '32'}, '2', '+'],  
-            [1.1234567891,f'Number generation with float(only 1 digit point 10 digits)', {'integer part': '1', 'float part': '1234567891'}, '2', '+'], 
-            [12.1234567891,f'Number generation with float(2 digits point 10 digits)', {'integer part': '12', 'float part': '1234567891'}, '2', '+'], 
-            #[2147483648.1234567891,f'Number generation with float(2^31 point 10 digits)', {'integer part': '2147483648', 'float part': '1234567891'}, '2', '+'], 
-            #[-2147483649.1234567891,f'Number generation with float(2^31+1 point 10 digits)', {'integer part': '2147483649', 'float part': '1234567891'}, '2', '-'], 
-            #[1.1234567891000000000000000,f'Number generation with float(only 1 digit point 10 digits 15 zeros)', {'integer part': '1', 'float part': '1234567891'}, '2', '+'], 
-            #[12.1234567891234560000000000,f'Number generation with float(2 digits point 15 digits 10 zeros)', {'integer part': '12', 'float part': '123456789123456'}, '2', '+'], 
-            #[2147483648.123456789100000123456789100000,f'Number generation with float(2^31 point 10 digits 5 zeros 5 digits 5 zeros)', {'integer part': '2147483648', 'float part': '1234567891000001234567891'}, '2', '+'], 
-            #[-2147483649.0000012345678910000000000,f'Number generation with float(2^31+1 point 5 zeros 10 digits 10 zeros)', {'integer part': '2147483649', 'float part': '000001234567891'}, '2', '-'], 
+            [1.0,f'Rational generation with float(only 1 digit point 0)', {'integer part': '1', 'float part': '0'}, '2', '+'], 
+            [12.0,f'Rational generation with float(2 digits point 0)', {'integer part': '12', 'float part': '0'}, '2', '+'], 
+            [2147483648.0,f'Rational generation with float(2^31 point 0)', {'integer part': '2147483648', 'float part': '0'}, '2', '+'], 
+            [-2147483649.0,f'Rational generation with float(2^31+1 point 0)', {'integer part': '2147483649', 'float part': '0'}, '2', '-'], 
+            [1.1,f'Rational generation with float(only 1 digit point 1 digit)', {'integer part': '1', 'float part': '1'}, '2', '+'], 
+            [12.2,f'Rational generation with float(2 digits point 1 digit)', {'integer part': '12', 'float part': '2'}, '2', '+'], 
+            [2147483648.3,f'Rational generation with float(2^31 point 1 digit)', {'integer part': '2147483648', 'float part': '3'}, '2', '+'], 
+            [-2147483649.4,f'Rational generation with float(2^31+1 point 1 digit)', {'integer part': '2147483649', 'float part': '4'}, '2', '-'], 
+            [1.12,f'Rational generation with float(only 1 digit point 2 digits)', {'integer part': '1', 'float part': '12'}, '2', '+'], 
+            [12.99,f'Rational generation with float(2 digits point 2 digits)', {'integer part': '12', 'float part': '99'}, '2', '+'], 
+            [2147483648.32,f'Rational generation with float(2^31 point 2 digits)', {'integer part': '2147483648', 'float part': '32'}, '2', '+'],  
+            [1.1234567891,f'Rational generation with float(only 1 digit point 10 digits)', {'integer part': '1', 'float part': '1234567891'}, '2', '+'], 
+            [12.1234567891,f'Rational generation with float(2 digits point 10 digits)', {'integer part': '12', 'float part': '1234567891'}, '2', '+'], 
+            #[2147483648.1234567891,f'Rational generation with float(2^31 point 10 digits)', {'integer part': '2147483648', 'float part': '1234567891'}, '2', '+'], 
+            #[-2147483649.1234567891,f'Rational generation with float(2^31+1 point 10 digits)', {'integer part': '2147483649', 'float part': '1234567891'}, '2', '-'], 
+            #[1.1234567891000000000000000,f'Rational generation with float(only 1 digit point 10 digits 15 zeros)', {'integer part': '1', 'float part': '1234567891'}, '2', '+'], 
+            #[12.1234567891234560000000000,f'Rational generation with float(2 digits point 15 digits 10 zeros)', {'integer part': '12', 'float part': '123456789123456'}, '2', '+'], 
+            #[2147483648.123456789100000123456789100000,f'Rational generation with float(2^31 point 10 digits 5 zeros 5 digits 5 zeros)', {'integer part': '2147483648', 'float part': '1234567891000001234567891'}, '2', '+'], 
+            #[-2147483649.0000012345678910000000000,f'Rational generation with float(2^31+1 point 5 zeros 10 digits 10 zeros)', {'integer part': '2147483649', 'float part': '000001234567891'}, '2', '-'], 
 
-            ['1.0',f'Number generation with str(only 1 digit point 0)', {'integer part': '1', 'float part': '0'}, '2', '+'], 
-            ['12.0',f'Number generation with str(2 digits point 0)', {'integer part': '12', 'float part': '0'}, '2', '+'], 
-            ['2147483648.0',f'Number generation with str(2^31 point 0)', {'integer part': '2147483648', 'float part': '0'}, '2', '+'], 
-            ['-2147483649.0',f'Number generation with str(2^31+1 point 0)', {'integer part': '2147483649', 'float part': '0'}, '2', '-'], 
-            ['18446744073709551616.0',f'Number generation with str(2^64 point 0)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '+'], 
-            ['1.1',f'Number generation with str(only 1 digit point 1 digit)', {'integer part': '1', 'float part': '1'}, '2', '+'], 
-            ['12.2',f'Number generation with str(2 digits point 1 digit)', {'integer part': '12', 'float part': '2'}, '2', '+'], 
-            ['2147483648.3',f'Number generation with str(2^31 point 1 digit)', {'integer part': '2147483648', 'float part': '3'}, '2', '+'], 
-            ['-2147483649.4',f'Number generation with str(2^31+1 point 1 digit)', {'integer part': '2147483649', 'float part': '4'}, '2', '-'], 
-            ['18446744073709551616.5',f'Number generation with str(2^64 point 1 digit)', {'integer part': '18446744073709551616', 'float part': '5'}, '2', '+'], 
-            ['1.12',f'Number generation with str(only 1 digit point 2 digits)', {'integer part': '1', 'float part': '12'}, '2', '+'], 
-            ['12.99',f'Number generation with str(2 digits point 2 digits)', {'integer part': '12', 'float part': '99'}, '2', '+'], 
-            ['2147483648.32',f'Number generation with str(2^31 point 2 digits)', {'integer part': '2147483648', 'float part': '32'}, '2', '+'], 
-            ['-2147483649.41',f'Number generation with str(2^31+1 point 2 digits)', {'integer part': '2147483649', 'float part': '41'}, '2', '-'], 
-            ['18446744073709551616.78',f'Number generation with str(2^64 point 2 digits)', {'integer part': '18446744073709551616', 'float part': '78'}, '2', '+'], 
-            ['1.1234567891',f'Number generation with str(only 1 digit point 10 digits)', {'integer part': '1', 'float part': '1234567891'}, '2', '+'], 
-            ['12.1234567891',f'Number generation with str(2 digits point 10 digits)', {'integer part': '12', 'float part': '1234567891'}, '2', '+'], 
-            ['2147483648.1234567891',f'Number generation with str(2^31 point 10 digits)', {'integer part': '2147483648', 'float part': '1234567891'}, '2', '+'], 
-            ['-2147483649.1234567891',f'Number generation with str(2^31+1 point 10 digits)', {'integer part': '2147483649', 'float part': '1234567891'}, '2', '-'], 
-            ['18446744073709551616.1234567891',f'Number generation with str(2^64 point 10 digits)', {'integer part': '18446744073709551616', 'float part': '1234567891'}, '2', '+'], 
-            ['1.1234567891123456789198765',f'Number generation with str(only 1 digit point 25 digits)', {'integer part': '1', 'float part': '1234567891123456789198765'}, '2', '+'], 
-            ['12.1234567891123456789198765',f'Number generation with str(2 digits point 25 digits)', {'integer part': '12', 'float part': '1234567891123456789198765'}, '2', '+'], 
-            ['2147483648.1234567891123456789198765',f'Number generation with str(2^31 point 25 digits)', {'integer part': '2147483648', 'float part': '1234567891123456789198765'}, '2', '+'], 
-            ['-2147483649.1234567891123456789198765',f'Number generation with str(2^31+1 point 25 digits)', {'integer part': '2147483649', 'float part': '1234567891123456789198765'}, '2', '-'], 
-            ['18446744073709551616.1234567891123456789198765',f'Number generation with str(2^64 point 25 digits)', {'integer part': '18446744073709551616', 'float part': '1234567891123456789198765'}, '2', '+'], 
-            ['1.1234567891000000000000000',f'Number generation with str(only 1 digit point 10 digits 15 zeros)', {'integer part': '1', 'float part': '1234567891'}, '2', '+'], 
-            ['12.1234567891234560000000000',f'Number generation with str(2 digits point 15 digits 10 zeros)', {'integer part': '12', 'float part': '123456789123456'}, '2', '+'], 
-            ['2147483648.123456789100000123456789100000',f'Number generation with str(2^31 point 10 digits 5 zeros 5 digits 5 zeros)', {'integer part': '2147483648', 'float part': '1234567891000001234567891'}, '2', '+'], 
-            ['-2147483649.0000012345678910000000000',f'Number generation with str(2^31+1 point 5 zeros 10 digits 10 zeros)', {'integer part': '2147483649', 'float part': '000001234567891'}, '2', '-'], 
-            ['18446744073709551616.0000000000000000000000000',f'Number generation with str(2^64 point 25 zeros)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '+'],
+            ['1.0',f'Rational generation with str(only 1 digit point 0)', {'integer part': '1', 'float part': '0'}, '2', '+'], 
+            ['12.0',f'Rational generation with str(2 digits point 0)', {'integer part': '12', 'float part': '0'}, '2', '+'], 
+            ['2147483648.0',f'Rational generation with str(2^31 point 0)', {'integer part': '2147483648', 'float part': '0'}, '2', '+'], 
+            ['-2147483649.0',f'Rational generation with str(2^31+1 point 0)', {'integer part': '2147483649', 'float part': '0'}, '2', '-'], 
+            ['18446744073709551616.0',f'Rational generation with str(2^64 point 0)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '+'], 
+            ['1.1',f'Rational generation with str(only 1 digit point 1 digit)', {'integer part': '1', 'float part': '1'}, '2', '+'], 
+            ['12.2',f'Rational generation with str(2 digits point 1 digit)', {'integer part': '12', 'float part': '2'}, '2', '+'], 
+            ['2147483648.3',f'Rational generation with str(2^31 point 1 digit)', {'integer part': '2147483648', 'float part': '3'}, '2', '+'], 
+            ['-2147483649.4',f'Rational generation with str(2^31+1 point 1 digit)', {'integer part': '2147483649', 'float part': '4'}, '2', '-'], 
+            ['18446744073709551616.5',f'Rational generation with str(2^64 point 1 digit)', {'integer part': '18446744073709551616', 'float part': '5'}, '2', '+'], 
+            ['1.12',f'Rational generation with str(only 1 digit point 2 digits)', {'integer part': '1', 'float part': '12'}, '2', '+'], 
+            ['12.99',f'Rational generation with str(2 digits point 2 digits)', {'integer part': '12', 'float part': '99'}, '2', '+'], 
+            ['2147483648.32',f'Rational generation with str(2^31 point 2 digits)', {'integer part': '2147483648', 'float part': '32'}, '2', '+'], 
+            ['-2147483649.41',f'Rational generation with str(2^31+1 point 2 digits)', {'integer part': '2147483649', 'float part': '41'}, '2', '-'], 
+            ['18446744073709551616.78',f'Rational generation with str(2^64 point 2 digits)', {'integer part': '18446744073709551616', 'float part': '78'}, '2', '+'], 
+            ['1.1234567891',f'Rational generation with str(only 1 digit point 10 digits)', {'integer part': '1', 'float part': '1234567891'}, '2', '+'], 
+            ['12.1234567891',f'Rational generation with str(2 digits point 10 digits)', {'integer part': '12', 'float part': '1234567891'}, '2', '+'], 
+            ['2147483648.1234567891',f'Rational generation with str(2^31 point 10 digits)', {'integer part': '2147483648', 'float part': '1234567891'}, '2', '+'], 
+            ['-2147483649.1234567891',f'Rational generation with str(2^31+1 point 10 digits)', {'integer part': '2147483649', 'float part': '1234567891'}, '2', '-'], 
+            ['18446744073709551616.1234567891',f'Rational generation with str(2^64 point 10 digits)', {'integer part': '18446744073709551616', 'float part': '1234567891'}, '2', '+'], 
+            ['1.1234567891123456789198765',f'Rational generation with str(only 1 digit point 25 digits)', {'integer part': '1', 'float part': '1234567891123456789198765'}, '2', '+'], 
+            ['12.1234567891123456789198765',f'Rational generation with str(2 digits point 25 digits)', {'integer part': '12', 'float part': '1234567891123456789198765'}, '2', '+'], 
+            ['2147483648.1234567891123456789198765',f'Rational generation with str(2^31 point 25 digits)', {'integer part': '2147483648', 'float part': '1234567891123456789198765'}, '2', '+'], 
+            ['-2147483649.1234567891123456789198765',f'Rational generation with str(2^31+1 point 25 digits)', {'integer part': '2147483649', 'float part': '1234567891123456789198765'}, '2', '-'], 
+            ['18446744073709551616.1234567891123456789198765',f'Rational generation with str(2^64 point 25 digits)', {'integer part': '18446744073709551616', 'float part': '1234567891123456789198765'}, '2', '+'], 
+            ['1.1234567891000000000000000',f'Rational generation with str(only 1 digit point 10 digits 15 zeros)', {'integer part': '1', 'float part': '1234567891'}, '2', '+'], 
+            ['12.1234567891234560000000000',f'Rational generation with str(2 digits point 15 digits 10 zeros)', {'integer part': '12', 'float part': '123456789123456'}, '2', '+'], 
+            ['2147483648.123456789100000123456789100000',f'Rational generation with str(2^31 point 10 digits 5 zeros 5 digits 5 zeros)', {'integer part': '2147483648', 'float part': '1234567891000001234567891'}, '2', '+'], 
+            ['-2147483649.0000012345678910000000000',f'Rational generation with str(2^31+1 point 5 zeros 10 digits 10 zeros)', {'integer part': '2147483649', 'float part': '000001234567891'}, '2', '-'], 
+            ['18446744073709551616.0000000000000000000000000',f'Rational generation with str(2^64 point 25 zeros)', {'integer part': '18446744073709551616', 'float part': '0'}, '2', '+'],
         ]
         for test in tests:
             try:
                 test_count += 1
-                a = Number(test[0])
+                a = Rational(test[0])
                 test_str = str(test[0]).rstrip('0').lstrip('0')
                 if test_str[-1]=='.':
                         test_str=test_str[:-1]
@@ -401,16 +401,23 @@ def number_base_test(reportType:str='full'):
             ['2', '3', 'nroot', f'finding a nroot(3) of int(2) periodic', 1.2599210499],
             ['313', '5', 'nroot', f'finding a nroot(5) of int(313) periodic', 3.1557956087],
             ['5', '31', 'nroot', f'finding a nroot(31) of int(5) periodic', 1.0532886867],
-            ]#TODO, pow(**), nroot(nroot)
+            
+            #POW tests
+            ['1', '0', 'pow', f'finding a pow(0) of int(1):1^0', 1],
+            ['1', '35', 'pow', f'finding a pow(35) of int(1):1^35', 1],
+            ['2', '12', 'pow', f'finding a pow(12) of int(2):2^12', 4096],
+            ['125', '15', 'pow', f'finding a pow(15) of int(125):125^15', 28421709430404007434844970703125],
+            ['1.1', '3', 'pow', f'finding a pow(3) of float(1.1):1.1^3', 1.331],
+            ]
         last_testing=''
         for test in tests:            
             test_count+=1
             if type(test[0])==str:
-                a=Number(test[0])
+                a=Rational(test[0], {'max float part':10})
             else:
                 a=test[0]
             if type(test[1])==str:
-                b=Number(test[1])
+                b=Rational(test[1], {'max float part':10})
             else:
                 b=test[1]
             testing = test[2]
@@ -470,6 +477,13 @@ def number_base_test(reportType:str='full'):
                         raise e
                         error_count+=1
                         print(f' ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
+                case 'pow':
+                    try:
+                        c=pow(a, b)  
+                    except Exception as e:
+                        raise e
+                        error_count+=1
+                        print(f' ERROR\n   ||\n   |└--->operation:{test[0]}{test[2]}{test[1]}\n   └--->{e.__repr__()}]\n')
             if c==test[-1]:
                 print('DONE')
                 done_count+=1
@@ -481,5 +495,5 @@ def number_base_test(reportType:str='full'):
 
             
         print('---------------------------------------------------------\n')
-        print(f'End Number testing with a report-mode:{reportType}\nTest count = {test_count}\nDone tests = {done_count}\nWrong tests = {wrong_count}\nErrors = {error_count}')
+        print(f'End Rational testing with a report-mode:{reportType}\nTest count = {test_count}\nDone tests = {done_count}\nWrong tests = {wrong_count}\nErrors = {error_count}')
         print('---------------------------------------------------------\n')

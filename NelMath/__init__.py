@@ -4,7 +4,7 @@ provides base mathematical objects and functions related to string-long-arythmet
 from .Crypt import *
 from .functions import *
 from .objects import *
-from .propetries import *
+from .properties import *
 from .tests import *
 
 

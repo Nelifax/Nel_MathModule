@@ -1,4 +1,4 @@
-from .Number import Number, MM_number_max_float_part
+from .Rational import Rational, MM_number_max_float_part
 
 __all__ = ['Constant']
  
@@ -26,10 +26,10 @@ class Constant():
             self.__max_float_part = float_part
             self.__initialized = True
     
-    def e(self)->'Number':
+    def e(self)->'Rational':
         '''
         returns an exponent with custom length of float part determined in Constant class
-        exponent() returns a Number class, to release a value use .e().value
+        exponent() returns a Rational class, to release a value use .e().value
         when .e() is calculated it's similar to use .exponent instead .e()
         '''
         if hasattr(self, 'exponent'):
@@ -93,17 +93,17 @@ class Constant():
             self.constants.pop(constant)
 
     def __get_exponent(self):        
-        result = Number(1, {'max float part': self.__max_float_part}) 
+        result = Rational(1, {'max float part': self.__max_float_part}) 
         result_next = result.copy()   
-        iterator = Number(1, {'max float part': self.__max_float_part})
-        border = Number('0.'+'0'*(self.__max_float_part-1)+'1', {'max float part': self.__max_float_part})
+        iterator = Rational(1, {'max float part': self.__max_float_part})
+        border = Rational('0.'+'0'*(self.__max_float_part-1)+'1', {'max float part': self.__max_float_part})
         while True:
             result_next = result_next.__mul__(1/iterator, 'exp')
             result += result_next
             if abs(result_next) < border:
                 break
             iterator += 1
-        self.exponent=result._Number__self_round_float()
+        self.exponent=result._Rational__self_round_float()
 
     def __get_pi(self):
         pass

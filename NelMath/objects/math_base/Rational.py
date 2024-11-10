@@ -1,22 +1,23 @@
-__all__ = ['Number', 'MM_number_max_float_part', 'MM_number_timeout_cap']
+__all__ = ['Rational', 'MM_number_max_float_part', 'MM_number_timeout_cap']
 
 global MM_number_max_float_part, MM_number_timeout_cap
 MM_number_max_float_part = 4
 MM_number_timeout_cap = 3
 
-class Number():
+class Rational():
     """
     provides str-number class that aimed to long-arythmetics
-    warning: due to python ristriction if float used as generator -> be careful if float part is short enough
+    warning: due to python ristriction if float used as generator -> be careful if float part is short enough or use str-format instead
     """
     def __init__(self, value:str|int|float, flags:dict={}):
-        if isinstance(value, Number):
+        if isinstance(value, Rational):
             value = value.value
         self.__flags = {
         'all references': False,
         'max float part': MM_number_max_float_part,
         'exponential view': False,
         'standart view': False,
+        'type changing': True,
         'type': 'integer',  
         'sign': '+',
         }
@@ -76,8 +77,8 @@ class Number():
             self.__flags['sign'] = '+'
             self.value = self.value[1:]
 
-    def copy(self)->'Number':
-        return Number(self.value, self.__flags)
+    def copy(self)->'Rational':
+        return Rational(self.value, self.__flags)
 
     def __neg__(self):
         neg = self.copy()
@@ -88,8 +89,8 @@ class Number():
         return neg
 
     def __lt__(self, other):#< 
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         match (self.__flags['sign'], other.__flags['sign']):
             case ('-', '+'):
                 return True
@@ -114,8 +115,8 @@ class Number():
             return False        
 
     def __gt__(self, other):#>
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         match (self.__flags['sign'], other.__flags['sign']):
             case ('-', '+'):
                 return False
@@ -140,8 +141,8 @@ class Number():
             return False
 
     def __le__(self, other):#<=
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         match (self.__flags['sign'], other.__flags['sign']):
             case ('-', '+'):
                 return True
@@ -168,8 +169,8 @@ class Number():
             return False
 
     def __ge__(self, other):#>=
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         match (self.__flags['sign'], other.__flags['sign']):
             case ('-', '+'):
                 return False
@@ -196,8 +197,8 @@ class Number():
             return False
 
     def __eq__(self, other):
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         if self.references == other.references and self.__flags['sign']==other.__flags['sign']:
             return True
         else:
@@ -209,9 +210,9 @@ class Number():
         else:
             return self
 
-    def __sub__(self, other)->'Number':
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+    def __sub__(self, other)->'Rational':
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         numb_a=self.copy()
         numb_b=other.copy()
         if self.__flags['sign'] == '-' and other.__flags['sign'] == '-':
@@ -220,9 +221,9 @@ class Number():
             elif (-numb_a) < (-numb_b):
                 return (-other)-(-numb_a)
             else:
-               return Number('0', {'max float part':self.__flags['max float part']})
+               return Rational('0', {'max float part':self.__flags['max float part']})
         if numb_b==numb_a:
-            return Number('0', {'max float part':self.__flags['max float part']})
+            return Rational('0', {'max float part':self.__flags['max float part']})
         if self.__flags['sign'] == '-' and other.__flags['sign'] == '+':
             return -((-numb_a)+numb_b)
         if self.__flags['sign'] == '+' and other.__flags['sign'] == '-':
@@ -253,11 +254,11 @@ class Number():
                 else:
                     calculated_float += str((int(float_a[i])-reminder) - int(float_b[i]))
                     reminder=0
-            integer_part = Number(self.references['integer part'])-Number(other.references['integer part'])-reminder_last
+            integer_part = Rational(self.references['integer part'])-Rational(other.references['integer part'])-reminder_last
             if reminder_last == 1:
-                return Number(integer_part.value+'.'+calculated_float[:-1][::-1], {'max float part':self.__flags['max float part']})
+                return Rational(integer_part.value+'.'+calculated_float[:-1][::-1], {'max float part':self.__flags['max float part']})
             else:
-                return Number(integer_part.value+'.'+calculated_float[::-1], {'max float part':self.__flags['max float part']})
+                return Rational(integer_part.value+'.'+calculated_float[::-1], {'max float part':self.__flags['max float part']})
         if self.references['integer part'] == '0':
             return -numb_b
         elif other.references['integer part'] == '0':
@@ -278,16 +279,16 @@ class Number():
                 else:
                     calculated += str((int(int_a[i])-reminder) - int(int_b[i]))
                     reminder=0
-            return Number(calculated[::-1], {'max float part':self.__flags['max float part']})  
+            return Rational(calculated[::-1], {'max float part':self.__flags['max float part']})  
     
-    def __rsub__(self, other)->'Number':
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+    def __rsub__(self, other)->'Rational':
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         return other - self
 
-    def __add__(self, other)->'Number':
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+    def __add__(self, other)->'Rational':
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         numb_a=self.copy()
         numb_b=other.copy()
         if self.__flags['sign'] == '-' and other.__flags['sign'] == '-':            
@@ -300,18 +301,18 @@ class Number():
             elif (-numb_a) < numb_b:
                 return numb_b-(-numb_a)
             else:
-                return Number('0', {'max float part':self.__flags['max float part']})
+                return Rational('0', {'max float part':self.__flags['max float part']})
         if self.__flags['sign'] == '+' and other.__flags['sign'] == '-':
             if numb_a > (-numb_b):
                 return numb_a-(-numb_b)
             elif numb_a < (-numb_b):
                 return -((-numb_b)-numb_a)
             else:
-                return Number('0', {'max float part':self.__flags['max float part']})
+                return Rational('0', {'max float part':self.__flags['max float part']})
         if self.references['float part'] != '0' or other.references['float part'] != '0':
             float_a = self.references['float part']
             float_b = other.references['float part']            
-            float_part = Number(float_a, {'max float part':self.__flags['max float part']}) + Number(float_b, {'max float part':self.__flags['max float part']})
+            float_part = Rational(float_a, {'max float part':self.__flags['max float part']}) + Rational(float_b, {'max float part':self.__flags['max float part']})
             calculated_float = ''
             reminder = 0
             float_a = float_a[::-1]
@@ -334,8 +335,8 @@ class Number():
             else:
                 calculated_float = calculated_float[::-1]
                 reminder=0
-            integer_part = Number(self.references['integer part'])+Number(other.references['integer part'], {'max float part':self.__flags['max float part']})+reminder
-            return Number(integer_part.value+'.'+calculated_float, {'max float part':self.__flags['max float part']})
+            integer_part = Rational(self.references['integer part'])+Rational(other.references['integer part'], {'max float part':self.__flags['max float part']})+reminder
+            return Rational(integer_part.value+'.'+calculated_float, {'max float part':self.__flags['max float part']})
         if self.references['integer part'] == '0':
             return other
         elif other.references['integer part'] == '0':
@@ -356,16 +357,16 @@ class Number():
                 calculated += str(numb) 
             if reminder != 0:
                 calculated += str(reminder)
-            return Number(calculated[::-1], {'max float part':self.__flags['max float part']})
+            return Rational(calculated[::-1], {'max float part':self.__flags['max float part']})
 
     def __radd__(self, other):
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         return other+self
 
-    def __mul__(self, other, mode='std')->'Number':      
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+    def __mul__(self, other, mode='std')->'Rational':      
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         numb_a = self.copy()
         numb_b = other.copy()        
         match (numb_a.__flags['sign'], numb_b.__flags['sign']):
@@ -377,16 +378,16 @@ class Number():
                 invert = True
         if abs(numb_b)==10:
             if numb_a.references['float part'] != '0':
-                return -Number(numb_a.references['integer part']+numb_a.references['float part'][0]+'.'+numb_a.references['float part'][1:], {'max float part':self.__flags['max float part']}) if invert else Number(numb_a.references['integer part']+numb_a.references['float part'][0]+'.'+numb_a.references['float part'][1:], {'max float part':self.__flags['max float part']})
+                return -Rational(numb_a.references['integer part']+numb_a.references['float part'][0]+'.'+numb_a.references['float part'][1:], {'max float part':self.__flags['max float part']}) if invert else Rational(numb_a.references['integer part']+numb_a.references['float part'][0]+'.'+numb_a.references['float part'][1:], {'max float part':self.__flags['max float part']})
             else:
-                return -Number(numb_a.references['integer part']+'0', {'max float part':self.__flags['max float part']}) if invert else Number(numb_a.references['integer part']+'0', {'max float part':self.__flags['max float part']})
+                return -Rational(numb_a.references['integer part']+'0', {'max float part':self.__flags['max float part']}) if invert else Rational(numb_a.references['integer part']+'0', {'max float part':self.__flags['max float part']})
         int_a = int(numb_a.references['integer part'])
         int_b = int(numb_b.references['integer part'])
         float_a = int(numb_a.references['float part'])
         float_b = int(numb_b.references['float part']) 
         int_part = int_a * int_b
         if float_a == 0 and float_b == 0:
-            return -Number(str(int_part), {'max float part':self.__flags['max float part']}) if invert else Number(str(int_part), {'max float part':self.__flags['max float part']})    
+            return -Rational(str(int_part), {'max float part':self.__flags['max float part']}) if invert else Rational(str(int_part), {'max float part':self.__flags['max float part']})    
         float_part = 0
         if float_a != 0 and float_b == 0:#(a+0.b)*(c+0)=ac+0.b*c
             additional_deg=len(numb_a.references['float part']) - len(numb_a.references['float part'].lstrip('0'))
@@ -397,9 +398,9 @@ class Number():
             to_int = int(float_part[0:-deg_a])
             float_part = float_part[-deg_a:]
             if mode != 'std':
-                return -Number(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}).__self_round_float(mode) if invert else Number(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}).__self_round_float(mode)
+                return -Rational(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}).__self_round_float(mode) if invert else Rational(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}).__self_round_float(mode)
             else:
-                return -Number(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}) if invert else Number(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}) 
+                return -Rational(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}) if invert else Rational(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}) 
         if float_a == 0 and float_b != 0:#(a+0)*(c+0.d)=ac+a*0.d
             additional_deg=len(numb_b.references['float part']) - len(numb_b.references['float part'].lstrip('0'))
             deg_b = len(numb_b.references['float part'])
@@ -409,47 +410,47 @@ class Number():
             to_int = int(float_part[0:-deg_b])
             float_part = float_part[-deg_b:]
             if mode != 'std':
-                return -Number(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}).__self_round_float(mode) if invert else Number(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}).__self_round_float(mode)
+                return -Rational(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}).__self_round_float(mode) if invert else Rational(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}).__self_round_float(mode)
             else:
-                return -Number(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}) if invert else Number(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']})
+                return -Rational(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']}) if invert else Rational(str(int_part+to_int)+'.'+float_part, {'max float part':self.__flags['max float part']})
         if float_a != 0 and float_b != 0:#(a+0.b)*(c+0.d)=ac+a*0.d+0.b*c+0.d*0.b
             #additional_deg=(len(numb_a.references['float part']) - len(numb_a.references['float part'].lstrip('0'))) + (len(numb_b.references['float part']) - len(numb_b.references['float part'].lstrip('0')))
             deg_a = len(numb_a.references['float part'])
             deg_b = len(numb_b.references['float part'])
             float_part = str(float_a * float_b)
-            int_part = Number(str(int_part), {'max float part':self.__flags['max float part']})
+            int_part = Rational(str(int_part), {'max float part':self.__flags['max float part']})
             while len(float_part) < deg_a+deg_b:
                 float_part = '0'+float_part            
-            float_part = Number('0.'+float_part, {'max float part':self.__flags['max float part']})
+            float_part = Rational('0.'+float_part, {'max float part':self.__flags['max float part']})
             float_part_one = str(float_a*int_b)
             float_part_two = str(float_b*int_a)
             while len(float_part_one) < deg_a:
                 float_part_one = '0'+float_part_one  
             while len(float_part_two) < deg_b:
                 float_part_two = '0'+float_part_two  
-            float_part_one = Number(float_part_one[0:-deg_a]+'.'+float_part_one[-deg_a:], {'max float part':self.__flags['max float part']})
-            float_part_two = Number(float_part_two[0:-deg_b]+'.'+float_part_two[-deg_b:], {'max float part':self.__flags['max float part']})
+            float_part_one = Rational(float_part_one[0:-deg_a]+'.'+float_part_one[-deg_a:], {'max float part':self.__flags['max float part']})
+            float_part_two = Rational(float_part_two[0:-deg_b]+'.'+float_part_two[-deg_b:], {'max float part':self.__flags['max float part']})
             float_part = float_part + float_part_one + float_part_two
-            int_part = int_part+Number(float_part.references['integer part'], {'max float part':self.__flags['max float part']})
+            int_part = int_part+Rational(float_part.references['integer part'], {'max float part':self.__flags['max float part']})
             if mode != 'std':
-                return -Number(int_part.references['integer part'] + '.' + float_part.references['float part'], {'max float part':self.__flags['max float part']}).__self_round_float(mode) if invert else Number(int_part.references['integer part'] + '.' + float_part.references['float part'], {'max float part':self.__flags['max float part']}).__self_round_float(mode)
+                return -Rational(int_part.references['integer part'] + '.' + float_part.references['float part'], {'max float part':self.__flags['max float part']}).__self_round_float(mode) if invert else Rational(int_part.references['integer part'] + '.' + float_part.references['float part'], {'max float part':self.__flags['max float part']}).__self_round_float(mode)
             else:
-                return -Number(int_part.references['integer part'] + '.' + float_part.references['float part'], {'max float part':self.__flags['max float part']}) if invert else Number(int_part.references['integer part'] + '.' + float_part.references['float part'], {'max float part':self.__flags['max float part']}) 
+                return -Rational(int_part.references['integer part'] + '.' + float_part.references['float part'], {'max float part':self.__flags['max float part']}) if invert else Rational(int_part.references['integer part'] + '.' + float_part.references['float part'], {'max float part':self.__flags['max float part']}) 
 
     def __rmul__(self, other):
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         return other*self
 
-    def __truediv__(self, other, mode='std')->'Number':#/
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']}) 
+    def __truediv__(self, other, mode='std')->'Rational':#/
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']}) 
         numb_a = self.copy()
         numb_b = other.copy()
         if other.value == '0':
             raise ZeroDivisionError()
         if self == 0:
-            return Number(0, {'max float part':self.__flags['max float part']})
+            return Rational(0, {'max float part':self.__flags['max float part']})
         match (numb_a.__flags['sign'], numb_b.__flags['sign']):
             case ('+', '+'):
                 invert = False
@@ -467,21 +468,21 @@ class Number():
             if integer_part != '0':
                 float_part=integer_part[-1]+float_part
                 integer_part = integer_part[0:-1]
-                return -Number(integer_part+'.'+float_part, {'max float part':self.__flags['max float part']}) if invert else Number(integer_part+'.'+float_part, {'max float part':self.__flags['max float part']})
+                return -Rational(integer_part+'.'+float_part, {'max float part':self.__flags['max float part']}) if invert else Rational(integer_part+'.'+float_part, {'max float part':self.__flags['max float part']})
             else:
-                return -Number('0.0'+float_part, {'max float part':self.__flags['max float part']}) if invert else Number('0.0'+float_part, {'max float part':self.__flags['max float part']})
+                return -Rational('0.0'+float_part, {'max float part':self.__flags['max float part']}) if invert else Rational('0.0'+float_part, {'max float part':self.__flags['max float part']})
         while numb_b.references['float part'] != '0':
             numb_b = numb_b*10
             numb_a = numb_a*10
         result=''
         result_float='0'
         floated=False
-        numerator = Number(0)
+        numerator = Rational(0)
         denominator = numb_b.copy()
         iterator=0
         numb = numb_a.value
         if denominator == 1:
-            return -Number(numb, {'max float part':self.__flags['max float part']}) if invert else Number(numb, {'max float part':self.__flags['max float part']})
+            return -Rational(numb, {'max float part':self.__flags['max float part']}) if invert else Rational(numb, {'max float part':self.__flags['max float part']})
         if '.' not in numb:
             numb = numb+'.0'
         while len(result_float)<self.__flags['max float part']+1:            
@@ -489,10 +490,10 @@ class Number():
             while numerator<denominator:
                 if len(numb)!=0 and numb[0]!='.':
                     if result=='':
-                        numerator = Number(numerator.references['integer part']+numb[0], {'max float part':self.__flags['max float part']})
+                        numerator = Rational(numerator.references['integer part']+numb[0], {'max float part':self.__flags['max float part']})
                         numb = numb[1:]
                     else:
-                        numerator = Number(numerator.references['integer part']+numb[0], {'max float part':self.__flags['max float part']})
+                        numerator = Rational(numerator.references['integer part']+numb[0], {'max float part':self.__flags['max float part']})
                         numb = numb[1:]
                         deg+=1
                 elif len(numb)!=0 and numb[0]=='.':
@@ -507,10 +508,10 @@ class Number():
                         result+='.'
                 elif len(numb)==0:
                     if result=='':
-                        numerator = Number(numerator.references['integer part']+'0', {'max float part':self.__flags['max float part']})
+                        numerator = Rational(numerator.references['integer part']+'0', {'max float part':self.__flags['max float part']})
                         numb = numb[1:]
                     else:
-                        numerator = Number(numerator.references['integer part']+'0', {'max float part':self.__flags['max float part']})
+                        numerator = Rational(numerator.references['integer part']+'0', {'max float part':self.__flags['max float part']})
                         numb = numb[1:]
                         deg+=1
                 if len(numb)==0 and numerator==0:
@@ -532,23 +533,23 @@ class Number():
                 result_float = result.split('.')[1]
             else:
                 result_float = '0'
-        result = Number(result, {'max float part':self.__flags['max float part']})
+        result = Rational(result, {'max float part':self.__flags['max float part']})
         if mode != 'std':
             return -result if invert else result
         else:
             return -result.__self_round_float() if invert else result.__self_round_float()
 
-    def __rtruediv__(self, other)->'Number':
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']}) 
+    def __rtruediv__(self, other)->'Rational':
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']}) 
         return other/self
 
-    def sqrt(self)->'Number':
+    def sqrt(self)->'Rational':
         numb = self.copy()
         result = numb/2
         if self.get_sign() == '-':
             raise TimeoutError('NOT IMPLEMENTED YET')
-        border = Number('0.'+'0'*(int(self.__flags['max float part'])-1)+'1', {'max float part':self.__flags['max float part']})
+        border = Rational('0.'+'0'*(int(self.__flags['max float part'])-1)+'1', {'max float part':self.__flags['max float part']})
         while True:
             result_next = (result + numb.__truediv__(result, 'root')).__mul__(0.5, 'root')
             if abs(result_next - result) < border:
@@ -556,20 +557,20 @@ class Number():
             result = result_next        
         return result.__self_round_float()
 
-    def __self_round_float(self, mode = 'std')->'Number':
+    def __self_round_float(self, mode = 'std')->'Rational':
         if mode != 'std':
             if len(self.references['float part'])>self.__flags['max float part']*2:
                 bord_float = self.references['float part'][self.__flags['max float part']*2]
                 if bord_float>'4':
                     values = self.value.split('.')
-                    self=Number(values[0]+'.'+values[1][0:self.__flags['max float part']*2], {'max float part':self.__flags['max float part']})
+                    self=Rational(values[0]+'.'+values[1][0:self.__flags['max float part']*2], {'max float part':self.__flags['max float part']})
                     if self.references['float part'] == '0':
                         return self
-                    self=self+Number('0.'+'0'*(self.__flags['max float part']*2-1)+'1', {'max float part':self.__flags['max float part']})
+                    self=self+Rational('0.'+'0'*(self.__flags['max float part']*2-1)+'1', {'max float part':self.__flags['max float part']})
                     return self
                 else:
                     values = self.value.split('.')
-                    self=Number(values[0]+'.'+values[1][0:self.__flags['max float part']*2], {'max float part':self.__flags['max float part']})
+                    self=Rational(values[0]+'.'+values[1][0:self.__flags['max float part']*2], {'max float part':self.__flags['max float part']})
                     return self
             else:
                 return self
@@ -577,30 +578,30 @@ class Number():
             bord_float = self.references['float part'][self.__flags['max float part']]
             if bord_float>'4':
                 values = self.value.split('.')
-                self=Number(values[0]+'.'+values[1][0:self.__flags['max float part']], {'max float part':self.__flags['max float part']})
+                self=Rational(values[0]+'.'+values[1][0:self.__flags['max float part']], {'max float part':self.__flags['max float part']})
                 if self.references['float part'] == '0':
                     return self
-                self=self+Number('0.'+'0'*(self.__flags['max float part']-1)+'1', {'max float part':self.__flags['max float part']})
+                self=self+Rational('0.'+'0'*(self.__flags['max float part']-1)+'1', {'max float part':self.__flags['max float part']})
                 return self
             else:
                 values = self.value.split('.')
-                self=Number(values[0]+'.'+values[1][0:self.__flags['max float part']], {'max float part':self.__flags['max float part']})
+                self=Rational(values[0]+'.'+values[1][0:self.__flags['max float part']], {'max float part':self.__flags['max float part']})
                 return self
         else:
             return self
 
-    def nroot(self, exp)->'Number':
-        if type(exp) != int and not isinstance(exp, Number):
+    def nroot(self, exp)->'Rational':
+        if type(exp) != int and not isinstance(exp, Rational):
             from objects.Fraction import Fraction
             exp = Fraction(str(exp))
             return self.nroot(exp.references['denominator'])
-        if not isinstance(exp, Number):
-            exp = Number(exp, {'max float part':self.__flags['max float part']})
+        if not isinstance(exp, Rational):
+            exp = Rational(exp, {'max float part':self.__flags['max float part']})
         if self.get_sign() == '-' and exp%2==0:
             raise TimeoutError('NOT IMPLEMENTED YET')        
         numb = self.copy()
-        result = Number(1, {'max float part':self.__flags['max float part']})
-        border = Number('0.'+'0'*(int(self.__flags['max float part'])-1)+'1', {'max float part':self.__flags['max float part']})
+        result = Rational(1, {'max float part':self.__flags['max float part']})
+        border = Rational('0.'+'0'*(int(self.__flags['max float part'])-1)+'1', {'max float part':self.__flags['max float part']})
         while True:
             result_next = ((exp - 1).__mul__(result, 'nroot') + numb.__truediv__(result.__pow__(exp - 1, mode='nroot'), 'nroot')).__truediv__(exp, 'nroot')
             if abs(result_next - result) < border:
@@ -608,9 +609,9 @@ class Number():
             result = result_next
         return result.__self_round_float()
 
-    def __floordiv__(self, other)->'Number':#//
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})            
+    def __floordiv__(self, other)->'Rational':#//
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})            
         numb_a = self.copy()
         numb_b = other.copy() 
         match (numb_a.__flags['sign'], numb_b.__flags['sign']):
@@ -621,29 +622,29 @@ class Number():
             case _:
                 invert = True 
         preresult=numb_a/numb_b
-        result = Number(preresult.references['integer part'], {'max float part':self.__flags['max float part']})
-        result = result+1 if Number(preresult.references['float part'])>0 and invert else result
+        result = Rational(preresult.references['integer part'], {'max float part':self.__flags['max float part']})
+        result = result+1 if Rational(preresult.references['float part'])>0 and invert else result
         return -result if invert else result
 
-    def __rfloordiv__(self, other)->'Number':
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']}) 
+    def __rfloordiv__(self, other)->'Rational':
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']}) 
         return other//self
 
-    def __mod__(self, other)->'Number':#%
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+    def __mod__(self, other)->'Rational':#%
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         numb_a = self.copy()
         if numb_a == 0:
-            return Number(0, {'max float part':self.__flags['max float part']})
+            return Rational(0, {'max float part':self.__flags['max float part']})
         numb_b = other.copy()        
         if numb_b == 0:
             raise TimeoutError()
         if other==2 and self.references['float part']=='0':
             if self.references['integer part'][-1] in ['0','2','4','6','8']:
-                return Number(0, {'max float part':self.__flags['max float part']})
+                return Rational(0, {'max float part':self.__flags['max float part']})
             else:                
-                return Number(1, {'max float part':self.__flags['max float part']})
+                return Rational(1, {'max float part':self.__flags['max float part']})
         inverted = False
         if numb_b.get_sign() == '-':
             inverted = True
@@ -653,28 +654,28 @@ class Number():
             numb_a*=10
             deg+=1 
         if numb_b == 1:
-            return Number(0, {'max float part':self.__flags['max float part']})
+            return Rational(0, {'max float part':self.__flags['max float part']})
         #if numb_b.references['integer part'].rstrip('0')=='1' and other<self:
-            #return Number(self.references['integer part'][-(len(other.references['integer part'])-1):]+'.'+self.references['float part'], {'max float part':self.__flags['max float part']})+numb_b if inverted else Number(self.references['integer part'][-(len(other.references['integer part'])-1):]+'.'+self.references['float part'], {'max float part':self.__flags['max float part']})
+            #return Rational(self.references['integer part'][-(len(other.references['integer part'])-1):]+'.'+self.references['float part'], {'max float part':self.__flags['max float part']})+numb_b if inverted else Rational(self.references['integer part'][-(len(other.references['integer part'])-1):]+'.'+self.references['float part'], {'max float part':self.__flags['max float part']})
         numb_a = numb_a-numb_b*(numb_a//numb_b)
         return numb_a/10**deg       
 
-    def __rmod__(self, other)->'Number':
-        if not isinstance(other, Number):
-            other = Number(other, {'max float part':self.__flags['max float part']})
+    def __rmod__(self, other)->'Rational':
+        if not isinstance(other, Rational):
+            other = Rational(other, {'max float part':self.__flags['max float part']})
         numb_a = self.copy()
         numb_b = other.copy()
         return other%self
 
     def __pow__(self, value, modulo = None, mode = 'std'):
-        if not isinstance(value, Number):
-            value = Number(value, {'max float part':self.__flags['max float part']})
+        if not isinstance(value, Rational):
+            value = Rational(value, {'max float part':self.__flags['max float part']})
         numb = self.copy()
         exp = value.copy()
         exp_sign = exp.get_sign()
         if exp.references['float part'] == '0':
             if exp.references['integer part'] == '0':
-                return Number(1, {'max float part':self.__flags['max float part']})
+                return Rational(1, {'max float part':self.__flags['max float part']})
             elif exp_sign == '+':
                 return numb.__mul__(numb.__pow__(value-1, mode), mode)
             elif exp_sign == '-':
@@ -684,6 +685,9 @@ class Number():
             raise TimeoutError('NOT IMPLEMENTED YET')  
 
     def __str__(self)->str:
+        return self.value
+
+    def __repr__(self)->str:
         return self.value
 
     def __int__(self)->int:
@@ -697,13 +701,3 @@ class Number():
             return -float(self.references['integer part']+'.'+self.references['float part'][0:self.__flags['max float part']])
         else:
             return float(self.references['integer part']+'.'+self.references['float part'][0:self.__flags['max float part']])
-
-    @staticmethod
-    def exponent(float_part:int=10)->'Number':
-        '''
-        returns an exponent with custom length of float part (std:float_part=10)
-        exponent() returns
-        '''
-        start = Number(1, {'max float part':float_part})
-    def ln(self)->'Number':
-        pass

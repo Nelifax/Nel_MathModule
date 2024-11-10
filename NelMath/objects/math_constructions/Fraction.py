@@ -1,31 +1,32 @@
 __all__ = ['Fraction']
 
-from .Number import Number, MM_number_max_float_part
+from NelMath.objects.math_base.Rational import Rational, MM_number_max_float_part
+from .Math_object import Math_object
 
-class Fraction(Number):
+class Fraction(Rational):
     """
     provides class to operate with fractions
     can build fractions from whatever type of data: int|float|list|tuple|str. Best way - list|tuple:[numerator, denominator]
     """
     def __init__(self, value:any, flags:dict={}):
-        if isinstance(value, Number):
+        if isinstance(value, Rational):
             value = value.value
         if type(value) != list and type(value) != tuple and '/' not in str(value) and '.' not in str(value).replace('.', '', 1):
             super().__init__(value)
-            self.__flags = self._Number__flags
-            del(self._Number__flags)
+            self.__flags = self._Rational__flags
+            del(self._Rational__flags)
             self.__flags['auto-simplify'] = True
             self.__flags['float to numerator'] = True
-            self.__flags['parts as Number'] = True
+            self.__flags['parts as Rational'] = True
             if self.references['float part'] == '0':
-                self.references['numerator'] = Number(self.references['integer part'])
-                self.references['denominator'] = Number('1')
+                self.references['numerator'] = Rational(self.references['integer part'])
+                self.references['denominator'] = Rational('1')
             else:
                 denominator = '1'
                 while len(self.references['float part']) >= len(denominator):
                     denominator+='0'
-                self.references['numerator'] = Number(self.references['integer part']+self.references['float part'])
-                self.references['denominator'] = Number(denominator)
+                self.references['numerator'] = Rational(self.references['integer part']+self.references['float part'])
+                self.references['denominator'] = Rational(denominator)
             #self.simplify()
         else:
             self.__flags={
@@ -34,7 +35,7 @@ class Fraction(Number):
                 'exponential view': False,
                 'standart view': False,        
                 'auto-simplify': True,
-                'parts as Number': True,
+                'parts as Rational': True,
                 'float to numerator': True,
                 'type': 'integer',  
                 'sign': '+',
@@ -55,8 +56,8 @@ class Fraction(Number):
                         raise TimeoutError()
             if value[1] == '' or value[1] == '0':
                 raise TimeoutError
-            self.references['numerator'] = Number(value[0])
-            self.references['denominator'] = Number(value[1])
+            self.references['numerator'] = Rational(value[0])
+            self.references['denominator'] = Rational(value[1])
             self.standartize()
             '''
             self.simplify()

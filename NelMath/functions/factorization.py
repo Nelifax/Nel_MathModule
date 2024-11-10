@@ -1,7 +1,6 @@
-
 __all__ = ['factorize' , 'get_primes']
 
-from NelMath.objects.Number import Number
+from NelMath.objects.math_base.Rational import Rational
 from math import isqrt
 
 def squfof(number:int)->list:
@@ -9,25 +8,25 @@ def squfof(number:int)->list:
         returns untrivial divisor for number, else return number if it has no untrivial divisors
         it's squfof implementation of https://homes.cerias.purdue.edu/~ssw/squfof.pdf
     '''
-    number=Number(number)
+    number=Rational(number)
     if number.sqrt().references['float part'] == '0':
         return number.sqrt()
     if number%4==1:
         D = 2*number
     else:
         D = number
-    S = Number(D.sqrt().references['integer part'])
-    Q_d = Number(1)
+    S = Rational(D.sqrt().references['integer part'])
+    Q_d = Rational(1)
     P = S.copy()
     Q = D-(P*P)
-    L = Number((2*((2*D.sqrt()).sqrt())).references['integer part'])
+    L = Rational((2*((2*D.sqrt()).sqrt())).references['integer part'])
     B = 2*L
     i=0
     queue = []
     is_skipped = True
     while is_skipped:
         if i>B: return 1
-        q = Number(((S+P)/Q).references['integer part'])
+        q = Rational(((S+P)/Q).references['integer part'])
         P_s = q*Q-P
         if Q<=L:
             if Q%2 == 0:
@@ -42,7 +41,7 @@ def squfof(number:int)->list:
             i += 1
             continue
         else:
-            r = Number(Q.sqrt().references['integer part'])
+            r = Rational(Q.sqrt().references['integer part'])
             is_skipped = False
             for pair in queue:
                 if pair[0] == 1 and r == 1:
@@ -54,12 +53,12 @@ def squfof(number:int)->list:
                         i += +1
                         continue    
     Q_d = r
-    P = P+r*Number(((S-P)/r).references['integer part'])
+    P = P+r*Rational(((S-P)/r).references['integer part'])
     Q = (D-P*P)/Q_d
     iterator_border=i
     i=0
     while True:
-        q = Number(((S+P)/Q).references['integer part'])
+        q = Rational(((S+P)/Q).references['integer part'])
         P_s = q*Q-P        
         if P==P_s:
             break
@@ -72,15 +71,15 @@ def squfof(number:int)->list:
         i+=1
     return Q.copy() if Q%2==1 else Q.copy()/2
 
-def factorize(number:Number|int)->int:
+def factorize(number:Rational|int)->int:
     '''
     provides number factorization. returns an array with all factors of number (with duplication). Uses simple primal-division and squfof methods.
     parameters:
-        number(int|Number) - number to factorize
+        number(int|Rational) - number to factorize
     '''
     primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997]
-    if not isinstance(number, Number):
-        number=Number(number)
+    if not isinstance(number, Rational):
+        number=Rational(number)
     if number<0:
         number = -number
     factors = []
@@ -117,7 +116,7 @@ def factorize(number:Number|int)->int:
                 factors.append(prime)
                 factors[index] = int(factors[index]/prime)
     for factor in factors:
-        if isinstance(factor, Number):
+        if isinstance(factor, Rational):
             factors[factors.index(factor)]=int(factor)
             
     factors.sort()
@@ -126,22 +125,6 @@ def factorize(number:Number|int)->int:
         factors = factors[:factors.index(1)]
         factors.reverse()
     return factors
-        
-
-
-    '''
-    factors=[]
-    while number%2 == 0:
-        number = int(number/2)
-        factors.append(2)
-    border = int(number**0.5)+1
-    for i in range(3,border, 2):
-        while number%i == 0:
-            number = int(number/i)
-            factors.append(i)
-    if number != 1:
-        factors.append(number)
-    return factors'''
 
 def divisors(number:int)->list:
     '''

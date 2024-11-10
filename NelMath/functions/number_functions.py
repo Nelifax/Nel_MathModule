@@ -1,27 +1,26 @@
-__all__ = ['is_simple', 'gcd', 'lcm']
+__all__ = ['is_prime', 'gcd', 'lcm', 'euler_phi', 'carmichael']
 
+from NelMath.objects.math_base.Rational import Rational
 
-def is_simple(number:int)->bool:
+def is_prime(number:int|Rational)->bool:
     '''
-        function based on factorization and list of primes effective up to 10^9 and still effective untill n<10^34
+        function based on factorization and list of primes effective up to 10^9 and still effective but more slowly for n>10^9
     '''
-    from .factorization import get_primes, factorize
+    from .factorization import factorize, squfof
     if number <4:
         return True
-    if number<=2147483648:
-        primes = get_primes(trunc(number**0.5)+1)
-        if number in primes:
-            return True
-        else:
-            return False
+    number = Rational(number)
+    factor = squfof(number)
+    if factor != 1 and factor != number:
+        return False
     else:
         factors = factorize(number)
-        #print(factors)
         if len(factors)==1:
             return True
-        else: return False
+        else: 
+            return False
 
-def gcd(*numbers:int)->int:
+def gcd(*numbers:int|Rational)->int:
     '''
     provides greatest common divisor for numbers by \'Euclidean algorithm\'
     parameters:
@@ -74,15 +73,68 @@ def lcm(*numbers:int)->int:
         return lcm(number_a, numbers[0])
     return int((numbers[0]*numbers[1])/gcd(numbers[0],numbers[1]))
 
-def trunc(number:float)->int:
+def euler_phi(number:int|Rational):
     '''
-    provides integer part of float (no any round)
-    ex: float(2,327...)->int(2); float(3,993)...->int(3)
+    returns euler phi result for number
     '''
-    return int(str(number).split('.')[0])
-
-def is_full_square(number:int)->bool:
-    if  number != 1 and trunc(number**0.5)**2 == number:
-        return True
+    if not isinstance(number, Rational):
+        number = Rational(number)
+    if is_prime(number):
+        return Rational-1
     else:
-        return False
+        from .factorization import factorize
+        factors = factorize(number)
+        result = 1
+        if len(set(factors)) == len (factors):
+            for factor in factors:
+                result *= factor-1
+            return result
+        else:
+            remembered_factor = factors[0]
+            count=0
+            for factor in factors:
+                if remembered_factor != factor:
+                    result*=remembered_factor**count-remembered_factor**(count-1)
+                    count=1                    
+                    remembered_factor = factor
+                else:
+                    count+=1
+            if count!=1:
+                result*=remembered_factor**count-remembered_factor**(count-1)
+            else:
+                result*=(remembered_factor-1)
+            return result
+def carmichael(number:int|Rational):
+    '''
+    returns carmichael function result for number
+    '''
+    if not isinstance(number, Rational):
+        number = Rational(number)
+    if is_prime(number):
+        return Rational-1
+    else:
+        from .factorization import factorize
+        factors = factorize(number)
+        results = []
+        remembered_factor = factors[0]
+        count=0
+        for factor in factors:
+            if remembered_factor != factor:
+                if factor == 2 and count > 2:
+                    results.append(int((remembered_factor**count-remembered_factor**(count-1))*0.5))
+                    count=1                    
+                    remembered_factor = factor
+                else:
+                    results.append(remembered_factor**count-remembered_factor**(count-1))
+                    count=1                    
+                    remembered_factor = factor
+            else:
+                count+=1
+        if count!=1:
+            if factor == 2 and count > 2:
+                results.append(int((remembered_factor**count-remembered_factor**(count-1))*0.5))
+            else:
+                results.append(remembered_factor**count-remembered_factor**(count-1))
+        else:
+            results.append(remembered_factor-1)
+        return lcm(results)
