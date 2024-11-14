@@ -203,6 +203,8 @@ class Rational():
             return True
         else:
             return False
+    def __ne__(self, other):
+        return not self.__eq__(other)
     
     def __abs__(self):
         if self.__flags['sign'] == '-':
@@ -592,7 +594,7 @@ class Rational():
 
     def nroot(self, exp)->'Rational':
         if type(exp) != int and not isinstance(exp, Rational):
-            from objects.Fraction import Fraction
+            from NelMath.objects.math_constructions.Fraction import Fraction
             exp = Fraction(str(exp))
             return self.nroot(exp.references['denominator'])
         if not isinstance(exp, Rational):
