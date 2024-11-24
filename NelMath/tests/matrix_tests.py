@@ -250,7 +250,7 @@ def matrices_base_test(reportType:str='full', **kwargs):
                 print(f'{iterator}) '+test[2] + f': DONE')
         else:
             error_count+=1
-            print(f'{iterator}) '+test[2] + f': ERROR\n   |\n   └--->{test[3]} not equal!\n')
+            print(f'{iterator}) '+test[2] + f': ERROR\n   |\n   └--->{test[3]} not equal (expected:{test[-3]} but get {test[0]})!\n')
          
     print('---------------------------------------------------------\n')
     print(f'End matrix testing with a report-mode:{reportType}\nTest count = {test_count}\nDone tests = {done_count}\nErrors = {error_count}')

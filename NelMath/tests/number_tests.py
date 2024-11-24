@@ -93,7 +93,7 @@ def number_base_test(reportType:str='full', **kwargs):
             test_str = str(test[0]).rstrip('0').lstrip('0')
             if test_str[-1]=='.':
                     test_str=test_str[:-1]
-            if a.references == test[2] and a.get_sign() == test[4] and a.value == test_str:
+            if a.references == test[2] and a.sign == test[4] and a.value == test_str:
                 if reportType=='full':
                     print(f'{test_count}) '+test[1] + f': DONE')
                 done_count+=1
@@ -101,8 +101,8 @@ def number_base_test(reportType:str='full', **kwargs):
                 print(f'{test_count}) '+test[1] + f'generator:{test[0]}-> WRONG at:')
                 if a.references != test[2]:
                     print(f'-->references: expected {test[2]} but get {a.references}')
-                if a.get_sign() != test[4]:
-                    print(f"-->sign: expected {test[4]} but get {a.get_sign()}")
+                if a.sign != test[4]:
+                    print(f"-->sign: expected {test[4]} but get {a.sign}")
                 if a.value !=  test_str:
                     print(f"-->value: expected {test_str} but get {a.value}")
                 wrong_count+=1
