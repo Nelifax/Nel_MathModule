@@ -1,4 +1,5 @@
 from NelMath.objects.errors.Error import MatrixError
+from NelMath.objects.math_base.Rational import Rational
 
 __all__=['MM_matrix_manual', 'Matrix']
 
@@ -49,11 +50,11 @@ class Matrix():
                     diagonalValues.append([])
                     for j in range(0, len(values)):
                         if i==j:
-                            diagonalValues[i].append(float(values[iterator]))
+                            diagonalValues[i].append(Rational(values[iterator]))
                             self.__generator_attribute+= str(values[iterator]) + ','
                             iterator+=1
                         else:
-                            diagonalValues[i].append(0)
+                            diagonalValues[i].append(Rational(0))
                             self.__generator_attribute+= '0,'
                 self.__generator_attribute = self.__generator_attribute[0:-1]
                 self.values = diagonalValues
@@ -132,7 +133,10 @@ class Matrix():
                 row_len = len(generator_attribute[0])
                 for row in generator_attribute:
                     if len(row) !=row_len:
-                        raise MatrixError(MatrixError.MM_error_not_enough_numbers)
+                        raise MatrixError(MatrixError.MM_error_not_enough_numbers)                
+                for i in range(len(generator_attribute)):
+                    for j in range(len(generator_attribute[0])):
+                        generator_attribute[i][j]=Rational(generator_attribute[i][j])
                 self.__flags['rows'] = len(generator_attribute)
                 self.__flags['columns'] = len(generator_attribute[0])
                 self.__flags['dimension'] = (self.__flags['rows'], self.__flags['columns'])
@@ -154,10 +158,7 @@ class Matrix():
             for i in range(0, self.__flags['rows']):
                 self.values.append([])
                 for j in range(0, self.__flags['columns']):
-                    if '.' in str(values[counter]):
-                        self.values[i].append(float(values[counter]))
-                    else:
-                        self.values[i].append(int(values[counter]))
+                    self.values[i].append(Rational(values[counter]))
                     counter+=1
             if not self.__flags['calculated']:self.find_determinant()
         elif type(generator_attribute) == list:
