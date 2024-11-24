@@ -1,42 +1,37 @@
+from NelMath.objects.math_base.Number import Number
 __all__ = ['Rational', 'MM_number_max_float_part', 'MM_number_timeout_cap']
 
 global MM_number_max_float_part, MM_number_timeout_cap
 MM_number_max_float_part = 4
 MM_number_timeout_cap = 3
 
-class Rational():
+class Rational(Number):
     """
     provides str-number class that aimed to long-arythmetics
     warning: due to python ristriction if float used as generator -> be careful if float part is short enough or use str-format instead
     """
+    #def __new__(cls, value, flags={}):
+        #instance = super().__new__(cls, value, flags)
+        #return instance
+
     def __init__(self, value:str|int|float, flags:dict={}):
-        if isinstance(value, Rational):
+        if isinstance(value, Number):
             value = value.value
-        self.__flags = {
-        'all references': False,
-        'max float part': MM_number_max_float_part,
-        'exponential view': False,
-        'standart view': False,
-        'type changing': True,
-        'type': 'integer',  
-        'sign': '+',
-        }
 
         self.references = {
         'integer part': '0',
         'float part': '0',                
         }
 
-        if flags != {}:
-            for key, fvalue in flags.items():
-                if key not in self.__flags.keys():
-                    raise TimeoutError()
-            self.__flags.update(flags)
+        self.sign='+'
+        
+        self.__flags = super()._check_flags(flags, 'Rational')
+        if type(value) == list or type(value)==tuple and len(type)==1:
+            value=value[0]
         value = str(value)
-        if '/' in value:
-            return
+        
         if value[0] == '+' or value[0]=='-':
-            self.__flags['sign'] = value[0]
+            self.sign = value[0]
             value = value[1:]
         if value.replace('.', '', 1).isdigit():            
             if '.' in value:
@@ -45,16 +40,16 @@ class Rational():
                     self.references['integer part'] = value[0].lstrip('0')
                 if value[1].rstrip('0')!='':
                     self.references['float part'] = value[1].rstrip('0')
-                self.value = self.__flags['sign']+self.references['integer part']
+                self.value = self.sign+self.references['integer part']
                 if self.references['float part'] != '0':
                     self.value+='.'+self.references['float part']
                     self.__flags['type'] = 'float'
             elif value.lstrip('0')=='':
-                self.value = self.__flags['sign']+'0'
+                self.value = '0'
             elif value!='0':
                 value = value.lstrip('0')
                 self.references['integer part'] = value
-                self.value = self.__flags['sign']+value
+                self.value = self.sign+value
             else:
                 self.value = '0'
         else:
@@ -65,16 +60,12 @@ class Rational():
             self.value = '0'
             self.__sign_invert()
 
-
-    def get_sign(self):
-        return self.__flags['sign']
-
     def __sign_invert(self):
-        if self.__flags['sign'] == '+':
-            self.__flags['sign'] = '-'
+        if self.sign == '+':
+            self.sign = '-'
             self.value = '-'+self.value
         else:
-            self.__flags['sign'] = '+'
+            self.sign = '+'
             self.value = self.value[1:]
 
     def copy(self)->'Rational':
@@ -83,7 +74,7 @@ class Rational():
     def __neg__(self):
         neg = self.copy()
         if neg.references['float part'] == '0' and neg.references['integer part'] == '0':
-            if neg.get_sign() == '+':
+            if neg.sign == '+':
                 return neg          
         neg.__sign_invert()
         return neg
@@ -91,7 +82,7 @@ class Rational():
     def __lt__(self, other):#< 
         if not isinstance(other, Rational):
             other = Rational(other, {'max float part':self.__flags['max float part']})
-        match (self.__flags['sign'], other.__flags['sign']):
+        match (self.sign, other.sign):
             case ('-', '+'):
                 return True
             case ('+', '-'):
@@ -117,7 +108,7 @@ class Rational():
     def __gt__(self, other):#>
         if not isinstance(other, Rational):
             other = Rational(other, {'max float part':self.__flags['max float part']})
-        match (self.__flags['sign'], other.__flags['sign']):
+        match (self.sign, other.sign):
             case ('-', '+'):
                 return False
             case ('+', '-'):
@@ -143,7 +134,7 @@ class Rational():
     def __le__(self, other):#<=
         if not isinstance(other, Rational):
             other = Rational(other, {'max float part':self.__flags['max float part']})
-        match (self.__flags['sign'], other.__flags['sign']):
+        match (self.sign, other.sign):
             case ('-', '+'):
                 return True
             case ('+', '-'):
@@ -171,7 +162,7 @@ class Rational():
     def __ge__(self, other):#>=
         if not isinstance(other, Rational):
             other = Rational(other, {'max float part':self.__flags['max float part']})
-        match (self.__flags['sign'], other.__flags['sign']):
+        match (self.sign, other.sign):
             case ('-', '+'):
                 return False
             case ('+', '-'):
@@ -195,11 +186,17 @@ class Rational():
             return True
         else:
             return False
+    
+    def __hash__(self):
+        return hash(self.value)
 
     def __eq__(self, other):
         if not isinstance(other, Rational):
-            other = Rational(other, {'max float part':self.__flags['max float part']})
-        if self.references == other.references and self.__flags['sign']==other.__flags['sign']:
+            if type(other)==str:
+                if not other.replace('.','',1).isdigit():
+                    return False
+        other = Rational(other, {'max float part':self.__flags['max float part']})
+        if self.references == other.references and self.sign==other.sign:
             return True
         else:
             return False
@@ -207,7 +204,7 @@ class Rational():
         return not self.__eq__(other)
     
     def __abs__(self):
-        if self.__flags['sign'] == '-':
+        if self.sign == '-':
             return -self
         else:
             return self
@@ -217,7 +214,7 @@ class Rational():
             other = Rational(other, {'max float part':self.__flags['max float part']})
         numb_a=self.copy()
         numb_b=other.copy()
-        if self.__flags['sign'] == '-' and other.__flags['sign'] == '-':
+        if self.sign == '-' and other.sign == '-':
             if (-numb_a) > (-numb_b):
                return -((-numb_a)-(-numb_b))
             elif (-numb_a) < (-numb_b):
@@ -226,9 +223,9 @@ class Rational():
                return Rational('0', {'max float part':self.__flags['max float part']})
         if numb_b==numb_a:
             return Rational('0', {'max float part':self.__flags['max float part']})
-        if self.__flags['sign'] == '-' and other.__flags['sign'] == '+':
+        if self.sign == '-' and other.sign == '+':
             return -((-numb_a)+numb_b)
-        if self.__flags['sign'] == '+' and other.__flags['sign'] == '-':
+        if self.sign == '+' and other.sign == '-':
             return numb_a+(-numb_b)          
         if numb_a<numb_b:
             return -(numb_b-numb_a)
@@ -293,18 +290,18 @@ class Rational():
             other = Rational(other, {'max float part':self.__flags['max float part']})
         numb_a=self.copy()
         numb_b=other.copy()
-        if self.__flags['sign'] == '-' and other.__flags['sign'] == '-':            
+        if self.sign == '-' and other.sign == '-':            
             numb_a.__sign_invert()
             numb_b.__sign_invert()
             return -(numb_a+numb_b)
-        if self.__flags['sign'] == '-' and other.__flags['sign'] == '+':
+        if self.sign == '-' and other.sign == '+':
             if (-numb_a) > numb_b:
                 return -((-numb_a)-numb_b)
             elif (-numb_a) < numb_b:
                 return numb_b-(-numb_a)
             else:
                 return Rational('0', {'max float part':self.__flags['max float part']})
-        if self.__flags['sign'] == '+' and other.__flags['sign'] == '-':
+        if self.sign == '+' and other.sign == '-':
             if numb_a > (-numb_b):
                 return numb_a-(-numb_b)
             elif numb_a < (-numb_b):
@@ -371,7 +368,7 @@ class Rational():
             other = Rational(other, {'max float part':self.__flags['max float part']})
         numb_a = self.copy()
         numb_b = other.copy()        
-        match (numb_a.__flags['sign'], numb_b.__flags['sign']):
+        match (numb_a.sign, numb_b.sign):
             case ('+', '+'):
                 invert = False
             case ('-', '-'):
@@ -453,16 +450,16 @@ class Rational():
             raise ZeroDivisionError()
         if self == 0:
             return Rational(0, {'max float part':self.__flags['max float part']})
-        match (numb_a.__flags['sign'], numb_b.__flags['sign']):
+        match (numb_a.sign, numb_b.sign):
             case ('+', '+'):
                 invert = False
             case ('-', '-'):
                 invert = False
             case _:
                 invert = True
-        if numb_a.__flags['sign'] == '-':
+        if numb_a.sign == '-':
             numb_a.__sign_invert()
-        if numb_b.__flags['sign'] == '-':
+        if numb_b.sign == '-':
             numb_b.__sign_invert()
         if other.value == '10':
             float_part = numb_a.references['float part']
@@ -549,7 +546,7 @@ class Rational():
     def sqrt(self)->'Rational':
         numb = self.copy()
         result = numb/2
-        if self.get_sign() == '-':
+        if self.sign == '-':
             raise TimeoutError('NOT IMPLEMENTED YET')
         border = Rational('0.'+'0'*(int(self.__flags['max float part'])-1)+'1', {'max float part':self.__flags['max float part']})
         while True:
@@ -599,7 +596,7 @@ class Rational():
             return self.nroot(exp.references['denominator'])
         if not isinstance(exp, Rational):
             exp = Rational(exp, {'max float part':self.__flags['max float part']})
-        if self.get_sign() == '-' and exp%2==0:
+        if self.sign == '-' and exp%2==0:
             raise TimeoutError('NOT IMPLEMENTED YET')        
         numb = self.copy()
         result = Rational(1, {'max float part':self.__flags['max float part']})
@@ -616,7 +613,7 @@ class Rational():
             other = Rational(other, {'max float part':self.__flags['max float part']})            
         numb_a = self.copy()
         numb_b = other.copy() 
-        match (numb_a.__flags['sign'], numb_b.__flags['sign']):
+        match (numb_a.sign, numb_b.sign):
             case ('+', '+'):
                 invert = False
             case ('-', '-'):
@@ -648,7 +645,7 @@ class Rational():
             else:                
                 return Rational(1, {'max float part':self.__flags['max float part']})
         inverted = False
-        if numb_b.get_sign() == '-':
+        if numb_b.sign == '-':
             inverted = True
         deg=0
         while numb_b.references['float part'] != '0':
@@ -674,7 +671,7 @@ class Rational():
             value = Rational(value, {'max float part':self.__flags['max float part']})
         numb = self.copy()
         exp = value.copy()
-        exp_sign = exp.get_sign()
+        exp_sign = exp.sign
         if exp.references['float part'] == '0':
             if exp.references['integer part'] == '0':
                 return Rational(1, {'max float part':self.__flags['max float part']})
@@ -687,19 +684,29 @@ class Rational():
             raise TimeoutError('NOT IMPLEMENTED YET')  
 
     def __str__(self)->str:
-        return self.value
+        return str(self.value)
 
     def __repr__(self)->str:
-        return self.value
+        return [f'Rational object', f'Rational({self.value})']
 
     def __int__(self)->int:
-        if self.__flags['sign'] == '-':
+        if self.sign == '-':
             return -int(self.references['integer part'])
         else:
             return int(self.references['integer part'])
 
     def __float__(self)->float:       
-        if self.__flags['sign'] == '-':
+        if self.sign == '-':
             return -float(self.references['integer part']+'.'+self.references['float part'][0:self.__flags['max float part']])
         else:
             return float(self.references['integer part']+'.'+self.references['float part'][0:self.__flags['max float part']])
+
+    def __format__(self, format_spec):        
+        if format_spec == "hex":
+            return hex(self.value)
+        elif format_spec == "bin":
+            return bin(self.value)
+        elif format_spec:
+            return format(str(self.value), format_spec)
+        else:
+            return self.__str__()
