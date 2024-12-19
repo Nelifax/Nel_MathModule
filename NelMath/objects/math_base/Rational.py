@@ -191,6 +191,12 @@ class Rational(Number):
         return hash(self.value)
 
     def __eq__(self, other):
+        if other=='' or other == None:
+            return False
+        if type(other)==list and len(other)>1:
+            return False
+        if type(other)==tuple and len(other)>1:
+            return False
         if not isinstance(other, Rational):
             if type(other)==str:
                 if not other.replace('.','',1).isdigit():
@@ -450,6 +456,9 @@ class Rational(Number):
             raise ZeroDivisionError()
         if self == 0:
             return Rational(0, {'max float part':self.__flags['max float part']})
+        if self.__flags ['type changing'] and mode=='std' and (Rational.__truediv__(numb_a, numb_b, 'div')).references['float part']!='0':  
+            from NelMath.objects.math_constructions.Fraction import Fraction
+            return Fraction([numb_a, numb_b], {'type changing': True, 'max float part':self.__flags['max float part']})
         match (numb_a.sign, numb_b.sign):
             case ('+', '+'):
                 invert = False
@@ -620,7 +629,7 @@ class Rational(Number):
                 invert = False
             case _:
                 invert = True 
-        preresult=numb_a/numb_b
+        preresult=Rational.__truediv__(numb_a, numb_b, 'floordiv')
         result = Rational(preresult.references['integer part'], {'max float part':self.__flags['max float part']})
         result = result+1 if Rational(preresult.references['float part'])>0 and invert else result
         return -result if invert else result
@@ -671,23 +680,40 @@ class Rational(Number):
             value = Rational(value, {'max float part':self.__flags['max float part']})
         numb = self.copy()
         exp = value.copy()
-        exp_sign = exp.sign
         if exp.references['float part'] == '0':
             if exp.references['integer part'] == '0':
                 return Rational(1, {'max float part':self.__flags['max float part']})
-            elif exp_sign == '+':
-                return numb.__mul__(numb.__pow__(value-1, mode), mode)
-            elif exp_sign == '-':
-                exp.__sign_invert()
-                return 1/(numb.__pow__(exp, mode))
+            if modulo==None:
+                if exp.sign == '+':
+                    return numb.__mul__(numb.__pow__(exp-1, None, mode), mode)
+                else:
+                    exp.__sign_invert()
+                    return 1/(numb.__pow__(exp, None, mode))
+            else:
+                if exp.sign == '+':
+                    if numb>modulo:
+                        numb=numb%modulo
+                    return numb.__mul__(numb.__pow__(exp-1, modulo, mode), mode)
+                else:
+                    from NelMath.functions.number_functions import gcd, is_prime
+                    if gcd(numb, modulo)!=1:
+                        raise TimeoutError('gcd(elem,mod)!=0')
+                    if is_prime(modulo):
+                        return numb.__pow__(modulo-2, modulo, mode)%modulo
+                    else:
+                        from NelMath.functions.number_functions import euler_phi
+                        return numb.__pow__(euler_phi(modulo)-1, modulo, mode)%modulo
         else:
             raise TimeoutError('NOT IMPLEMENTED YET')  
 
     def __str__(self)->str:
         return str(self.value)
 
-    def __repr__(self)->str:
-        return [f'Rational object', f'Rational({self.value})']
+    def __repr__(self, mode='std')->str:
+        if mode=='debug':
+            return [f'Rational object', f'Rational({self.value})']
+        else:
+            return self.__str__()
 
     def __int__(self)->int:
         if self.sign == '-':

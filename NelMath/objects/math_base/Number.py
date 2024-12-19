@@ -1,12 +1,13 @@
 __all__=['Number']
 
 from NelMath.properties.settings_handler import SettingsHandler
-settings=SettingsHandler()
+
 
 class Number():
     def __new__(cls, value, flags={}):        
         if cls is not Number:
-            return super().__new__(cls)
+            return super().__new__(cls)        
+        settings=SettingsHandler()
         if ('type changing' in flags and flags['type changing']) or ('type changing' not in flags and settings.get('mm_dynamic_class_changing')):
             if Number.is_fraction(value):
                 from NelMath.objects.math_constructions import Fraction
@@ -25,6 +26,7 @@ class Number():
 
     @staticmethod
     def _check_flags(flags, construction)->dict:
+        settings=SettingsHandler()
         match(construction):
             case 'Rational':
                 std_flags={
@@ -69,13 +71,15 @@ class Number():
         from NelMath.objects.math_constructions import Fraction
         if isinstance(value, Fraction):
             return True
-        if type(value)==str:             
+        if type(value)==str:
             if value=='':
                 return False
             if '/' not in value:
                 if value[0]=='-' or value[0]=='+':
                     value=value[1:]
-                if value.replace('.', '', 1).isdigit():
+                if value.isdigit():
+                    return False
+                if '.' in value and value.replace('.', '', 1).isdigit():
                     return True
             import re
             sample = re.match(r'([\+\-]*\d+(\.\d+)?\/[\+\-]*\d+(\.\d+)?)', value)            
@@ -129,5 +133,5 @@ class Number():
         if type(value)==tuple:
             value=list(value)
         if len(value)==1:
-            return Number.is_rational(value[0])        
+            return Number.is_rational(value[0])
         return False

@@ -23,13 +23,13 @@ class SettingsHandler():
 
     @staticmethod
     def save_working_settings():
-        SettingsHandler.__working=SettingsHandler.__settings
+        SettingsHandler.__instance.__working=SettingsHandler.__instance.__settings
 
     @staticmethod
     def release_working_settings():
-        if SettingsHandler.__working:
-            SettingsHandler.__settings=SettingsHandler.__working
-            del(SettingsHandler.__working)
+        if SettingsHandler.__instance.__working:
+            SettingsHandler.__instance.__settings=SettingsHandler.__instance.__working
+            del(SettingsHandler.__instance.__working)
     
     @staticmethod
     def release_settings_file(path):
@@ -53,8 +53,8 @@ class SettingsHandler():
         '''
         returns setting by it's key or None if setting isn't present in handler
         '''
-        if key in SettingsHandler.__settings.keys():
-            return SettingsHandler.__settings[key]
+        if key in SettingsHandler.__instance.__settings.keys():
+            return SettingsHandler.__instance.__settings[key]
         return None
 
     def set_defaults(self)->None:

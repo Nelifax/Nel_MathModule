@@ -165,6 +165,8 @@ class Equation():
 
         pass
 
+'''
 abc=Equation('2.5x^3+2x^2=2', ['x'])
 abb=Equation('1x^2+2x=-2', ['x'])
 abc*abb
+'''

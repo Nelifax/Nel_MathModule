@@ -1,4 +1,11 @@
 settings={
+#module settings
+    'mm_use_pregenerated_data':True,
+    'mm_pregenerated_data':{
+        'pd_primals':True,
+        'pd_factors':True,
+        'pd_constants':True
+        },
 #math base settings
     'mm_max_float_part':4,
     'mm_dynamic_class_changing': False,

@@ -1,5 +1,6 @@
+from math import e
 from NelMath.objects.errors.Error import MatrixError
-from NelMath.objects.math_base.Rational import Rational
+from NelMath.objects.math_base.Rational import Rational, Number
 
 __all__=['MM_matrix_manual', 'Matrix']
 
@@ -158,11 +159,14 @@ class Matrix():
             for i in range(0, self.__flags['rows']):
                 self.values.append([])
                 for j in range(0, self.__flags['columns']):
-                    self.values[i].append(Rational(values[counter]))
+                    self.values[i].append(Number(values[counter]))
                     counter+=1
             if not self.__flags['calculated']:self.find_determinant()
-        elif type(generator_attribute) == list:
+        elif type(generator_attribute) == list:            
             self.values = generator_attribute
+            for i in range(0, len(self.values)):
+                for j in range(0, len(self.values[0])):
+                    self.values[i][j]=Number(self.values[i][j])
             if not self.__flags['calculated']:self.find_determinant()
         else: raise TimeoutError
 
@@ -259,7 +263,7 @@ class Matrix():
             newMatrix = Matrix(newMatrixValues, newMatrixRules)
         return newMatrix
 
-    def find_addition(self, row:int, column:int)->int:
+    def find_addition(self, row:int, column:int):
         if (row+column)%2==0:
             sign = 1;
         else: 
@@ -437,7 +441,7 @@ class Matrix():
                 for i in range(0, self.__flags['rows']):
                     newMatrixValues.append([])
                     for j in range(0,other.__flags['columns']):
-                        value = 0
+                        value = Rational(0)
                         for k in range(0, other.__flags['rows']):
                             value += self.values[i][k]*other.values[k][j]
                         newMatrixValues[i].append(value)       

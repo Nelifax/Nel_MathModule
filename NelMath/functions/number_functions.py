@@ -73,7 +73,7 @@ def lcm(*numbers:int)->int:
         return lcm(number_a, numbers[0])
     return int((numbers[0]*numbers[1])/gcd(numbers[0],numbers[1]))
 
-def euler_phi(number:int|Rational):
+def euler_phi(number:int|Rational)->Rational:
     '''
     returns euler phi result for number
     '''
@@ -102,7 +102,7 @@ def euler_phi(number:int|Rational):
             if count!=1:
                 result*=remembered_factor**count-remembered_factor**(count-1)
             else:
-                result*=(remembered_factor-1)
+                result*=remembered_factor-1
             return result
 def carmichael(number:int|Rational):
     '''

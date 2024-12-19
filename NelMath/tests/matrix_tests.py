@@ -1,5 +1,6 @@
 ﻿from NelMath.objects.errors.Error import *
 from NelMath.objects.linear_algebra.Matrix import Matrix
+from NelMath.properties.settings_handler import SettingsHandler
 
 __all__ = ['matrices_base_test']
 

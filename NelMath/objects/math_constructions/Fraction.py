@@ -11,6 +11,32 @@ class Fraction(Number):
     provides class to operate with fractions
     can build fractions from whatever type of data: int|float|list|tuple|str. Best way - list|tuple:[numerator, denominator]
     """
+    
+    def __new__(cls, value, flags={}):
+        settings=SettingsHandler()
+        if ('type changing' in flags and flags['type changing']) or ('type changing' not in flags and settings.get('mm_dynamic_class_changing')):            
+            instance = ''
+            if type(value)==tuple or type(value)==list:
+                value=list(value)
+            else:
+                value=[value]
+            if len(value)==1:
+                if type(value[0])==str and Number.is_rational(value):
+                    instance = super().__new__(Number, value[0], flags)
+                else:                    
+                    instance = super().__new__(cls, value, flags)
+            else:
+                if value[1]=='1' or value[1]==1 or value[1]==1.0:                
+                    instance = super().__new__(Number, value[0], flags)
+                div=Rational(value[0], {'type changing':False})/Rational(value[1])
+                if div.references['float part']=='0':
+                    instance = super().__new__(Number, div, flags)
+            if instance == '':
+                instance = super().__new__(cls, value, flags)
+        else:
+            instance = super().__new__(cls, value, flags)
+        return instance
+    
     def __init__(self, value:any, flags:dict={}):
         self.sign='+'
         if type(value)==list and len(value)==1:
@@ -93,7 +119,7 @@ class Fraction(Number):
             self.references['denominator']._Rational__sign_invert()
         self.standartize()
         self.simplify()        
-        self.value=self.references['integer part'] + self.references['numerator']/self.references['denominator']
+        self.value=self.references['integer part'] + Rational.__truediv__(self.references['numerator'], self.references['denominator'], 'fraction')
         if self.sign=='-':
             self.value=-self.value
     
@@ -112,10 +138,10 @@ class Fraction(Number):
         if self.references['numerator']==self.references['denominator']:
             return Rational(self.references['integer part'])
 
-    def improper_view(self)->'Fraction':
+    def improper_view(self)->None:
         if self.references['integer part']!=0:
             self.references['numerator']+=self.references['integer part']*self.references['denominator']
-            self.references['integer part'] = 0     
+            self.references['integer part'] = Rational(0)     
 
     def __transform_mul(self, value)->'Fraction':
         self.references['numerator']*=value
@@ -148,8 +174,16 @@ class Fraction(Number):
             return self
 
     def copy(self)->'Fraction':
-        self.improper_view()
-        return Fraction([self.references['numerator'], self.references['denominator']], self.__flags)
+        if self.references['integer part']!='0':
+            numerator=self.references['numerator']+self.references['denominator']*self.references['integer part']
+            denominator=self.references['denominator']
+        else:
+            numerator=self.references['numerator']
+            denominator=self.references['denominator']
+        if self.sign=='-':
+            return -Fraction([numerator, denominator], self.__flags)
+        else:
+            return Fraction([numerator, denominator], self.__flags)
 
     def get_sign(self):
         return self.sign
@@ -265,15 +299,20 @@ class Fraction(Number):
         pass
 
     def __eq__(self, other)->bool:
+        if other=='':
+            return False
         if not isinstance(other, Fraction):
-            other=Fraction(other)
+            other=Fraction(other, {'type changing':False})
         if self.sign!=other.sign:
             return False
-        fraction_lcm=lcm(self.references['denominator'], other.references['denominator'])
-        self.__transform_mul(fraction_lcm/self.references['denominator'])
+        fraction=self.copy()
+        fraction.improper_view()
+        other.improper_view()
+        fraction_lcm=lcm(fraction.references['denominator'], other.references['denominator'])
+        fraction.__transform_mul(fraction_lcm/fraction.references['denominator'])
         other.__transform_mul(fraction_lcm/other.references['denominator'])
         for key in self.references.keys():
-            if self.references[key]!=other.references[key]:
+            if fraction.references[key]!=other.references[key]:
                 return False
         return True
 
@@ -290,17 +329,26 @@ class Fraction(Number):
                 return f'{sign}({self.references["integer part"]}+{self.references["numerator"]}/{self.references["denominator"]})'
         else:
             return f'{sign}{self.references["integer part"]}'
-
-    def __repr__(self):
+    
+    def __repr__(self, mode='std'):
         fraction=self.copy()
         fraction.improper_view()
-        if self.sign=='-':
-            return [f'Fraction object', f'Fraction(-{str(fraction.references["numerator"])}/{str(fraction.references["denominator"])})']
-        return [f'Fraction object', f'Fraction({str(fraction.references["numerator"])}/{str(fraction.references["denominator"])})']
+        if mode=='debug':
+            if self.sign=='-':
+                return [f'Fraction object', f'Fraction(-{str(fraction.references["numerator"])}/{str(fraction.references["denominator"])})']
+            return [f'Fraction object', f'Fraction({str(fraction.references["numerator"])}/{str(fraction.references["denominator"])})']
+        else:
+            return self.__str__()
 
     def print(self):
         print(f'Fraction:{self.references["integer part"]}+{self.references["numerator"]}/{self.references["denominator"]}')
         print(f'With:\n Integer part={self.references["integer part"]}\n   And value={self.value}')
+
+    def __format__(self, format_spec): 
+        if format_spec:
+            return format(self.__str__(), format_spec)
+        else:
+            return self.__str__()
 
     @staticmethod
     def build(periodic_float:str)->'Fraction':
@@ -346,4 +394,31 @@ class Fraction(Number):
                     deg+=1
                 nonperiodic=Rational(nonperiodic.references['integer part']+'.'+periodic_part)
         return Fraction([nonperiodic-periodic, (10**deg)-(10**k)])
+    
+    @staticmethod
+    def __fractionize_value(obj:any)->list:
+        if isinstance(obj, Rational):
+            return [obj, Rational('1')]
+        if type(obj)==str:
+            if Number.is_rational(obj):
+                return [Rational(obj), Rational(1)]
+            if Number.is_fraction(obj):
+                if type(obj)==str:
+                    sign=''
+                    integer=1
+                    if obj[0]=='-':
+                        obj=obj[1:]
+                        sign='-'
+                    if '(' in obj and ')' in obj:                    
+                        obj=obj[1:-1]
+                        obj=obj.split('+')
+                        integer=Rational(obj[0])
+                        obj=obj[1]
+                    if '/' in obj:
+                        obj = obj.split('/')
+                    return [Rational(sign+obj[0])*integer, Rational(obj[1])]
+                if type(obj)==tuple:
+                    obj=list(obj)
+                if len(obj)==1:
+                    return Fraction.__fractionize_value(obj[0])
         

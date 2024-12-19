@@ -71,7 +71,7 @@ def squfof(number:int)->list:
         i+=1
     return Q.copy() if Q%2==1 else Q.copy()/2
 
-def factorize(number:Rational|int)->int:
+def factorize(number:Rational|int, mode='std')->int:
     '''
     provides number factorization. returns an array with all factors of number (with duplication). Uses simple primal-division and squfof methods.
     parameters:
@@ -84,10 +84,17 @@ def factorize(number:Rational|int)->int:
         number = -number
     factors = []
     for prime in primes:
+        if prime>number:break
         while number%prime==0:
             number = number/prime
             factors.append(prime)    
     if number == 1:
+        if mode=='degrees':
+            unique_factors=set(factors)
+            factors_with_degrees = []
+            for elem in unique_factors:
+                factors_with_degrees.append((elem, factors.count(elem)))
+            return factors_with_degrees
         return factors
     while number != 1:
         factor = squfof(number)
@@ -124,6 +131,12 @@ def factorize(number:Rational|int)->int:
         factors.reverse()
         factors = factors[:factors.index(1)]
         factors.reverse()
+    if mode=='degrees':
+        unique_factors=set(factors)
+        factors_with_degrees = []
+        for elem in unique_factors:
+            factors_with_degrees.append((elem, factors.count(elem)))
+        return factors_with_degrees
     return factors
 
 def divisors(number:int)->list:
