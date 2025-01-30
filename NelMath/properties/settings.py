@@ -15,4 +15,7 @@ settings={
     'mm_key_only_primals' : True,
     'mm_key_enable_number_repeating' : True,
     'mm_key_maximum_repeat_count' : -1,
+#funcion settings
+    'mm_MR_prime_max_tries' : 10,
+    'mm_MR_prime_high_candidate_border': 100,
 }

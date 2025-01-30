@@ -1,24 +1,67 @@
-__all__ = ['is_prime', 'gcd', 'lcm', 'euler_phi', 'carmichael']
+__all__ = ['is_prime', 'gcd', 'lcm', 'euler_phi', 'carmichael', 'next_prime', 'find_primitive_root']
 
 from NelMath.objects.math_base.Rational import Rational
 
-def is_prime(number:int|Rational)->bool:
+def is_prime(number:int|Rational, tries:int=0)->bool:
     '''
-        function based on factorization and list of primes effective up to 10^9 and still effective but more slowly for n>10^9
+        function based on Miller-Rabin
     '''
-    from .factorization import factorize, squfof
-    if number <4:
-        return True
-    number = Rational(number)
-    factor = squfof(number)
-    if factor != 1 and factor != number:
-        return False
-    else:
-        factors = factorize(number)
-        if len(factors)==1:
-            return True
-        else: 
+    if tries==0 or tries<0:        
+        from NelMath.properties.settings_handler import SettingsHandler
+        settings=SettingsHandler()
+        tries=settings.get('mm_MR_prime_max_tries')
+    if number<1: return False
+    if number<=3: return True
+    if number%2==0: return False
+    if isinstance(number, Rational):
+        number = int(number)
+    r, d = 0, number - 1
+    while d % 2 == 0:
+        r += 1
+        d //= 2
+    from random import randint
+    import time
+    for _ in range(tries):
+        results=0
+        a=randint(2, number-2)
+        x = pow(a,d,number)
+        if x == 1 or x == number - 1:
+            continue
+        for _ in range(r - 1):
+            x = pow(x, 2, number)
+            if x == number - 1:
+                break
+        else:
             return False
+    return True
+
+def next_prime(low_border:int)->int:
+    '''
+    provides next prime number based on miller-rabin prime test
+    '''
+    primes=[3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+    prime = low_border
+    if prime==2:
+        return prime
+    if prime%2==0:
+        prime+=1
+    candidates=[]
+    from NelMath.properties.settings_handler import SettingsHandler
+    settings=SettingsHandler()
+    high_border=settings.get('mm_MR_prime_high_candidate_border')
+    while True:        
+        for i in range(prime, prime+high_border, 2):
+            candidates.append(i)
+        for prime_ in primes:
+            start = candidates[0] + (prime_ - candidates[0] % prime_) % prime_
+            multiples = range(start, candidates[-1] + 1, prime_)
+            candidates = [x for x in candidates if x not in multiples] 
+        for candidate in candidates:
+            if is_prime(candidate):
+                return candidate
+        prime=candidates[-1]
+          
+
 
 def gcd(*numbers:int|Rational)->int:
     '''
@@ -47,6 +90,11 @@ def gcd(*numbers:int|Rational)->int:
     else:
         a = numbers[0]
         b = numbers[1]
+    if is_prime(a) and is_prime(b):
+        if a%b==0:
+            return a//b
+        else:
+            return 1
     reminder = a-b*(a//b)
     while reminder != 0:
         reminder = a-b*(a//b)
@@ -80,12 +128,12 @@ def euler_phi(number:int|Rational)->Rational:
     if not isinstance(number, Rational):
         number = Rational(number)
     if is_prime(number):
-        return Rational-1
+        return number-1
     else:
         from .factorization import factorize
         factors = factorize(number)
         result = 1
-        if len(set(factors)) == len (factors):
+        if len(set(factors)) == len(factors):
             for factor in factors:
                 result *= factor-1
             return result
@@ -138,3 +186,39 @@ def carmichael(number:int|Rational):
         else:
             results.append(remembered_factor-1)
         return lcm(results)
+
+def find_primitive_root(modulo:int, divisor_list:list=[], mode='asc'):
+    if not is_prime(modulo):
+        return None
+    if divisor_list==[]:
+        from .factorization import divisors
+        divisor_list=divisors(euler_phi(modulo))
+    is_root_found=False
+    match(mode):
+        case 'des':
+            pass
+        case 'random':
+            from ..objects.math_additions.Random import Random
+            gen=Random()
+            while not is_root_found:
+                check=True
+                root=gen.rand_range(2,modulo-1)                    
+                for degree in divisor_list[1:-1]:
+                    if pow(root, degree, modulo)==1:
+                        check=False
+                        break
+                if check:
+                    return root
+        case _:
+            i=2
+            while not is_root_found:
+                check=True
+                for degree in divisor_list[1:-1]:
+                    if pow(i, degree, modulo)==1:
+                        check=False
+                        i+=1
+                        break
+                if check:
+                    return i
+
+    

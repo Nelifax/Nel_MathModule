@@ -693,7 +693,15 @@ class Rational(Number):
                 if exp.sign == '+':
                     if numb>modulo:
                         numb=numb%modulo
-                    return numb.__mul__(numb.__pow__(exp-1, modulo, mode), mode)
+                    result=Rational(1)
+                    while exp > 0:
+                        if exp % 2 == 1:
+                            result=result.__mul__(numb, mode)%modulo
+                        numb=numb**2
+                        exp //= 2
+                        if numb>modulo:
+                            numb=numb%modulo
+                    return result%modulo
                 else:
                     from NelMath.functions.number_functions import gcd, is_prime
                     if gcd(numb, modulo)!=1:

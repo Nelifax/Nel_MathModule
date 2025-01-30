@@ -1,4 +1,4 @@
-__all__ = ['factorize' , 'get_primes']
+__all__ = ['factorize' , 'get_primes', 'divisors']
 
 from NelMath.objects.math_base.Rational import Rational
 from math import isqrt
@@ -71,7 +71,7 @@ def squfof(number:int)->list:
         i+=1
     return Q.copy() if Q%2==1 else Q.copy()/2
 
-def factorize(number:Rational|int, mode='std')->int:
+def factorize(number:Rational|int, mode='std')->list:
     '''
     provides number factorization. returns an array with all factors of number (with duplication). Uses simple primal-division and squfof methods.
     parameters:
@@ -82,6 +82,9 @@ def factorize(number:Rational|int, mode='std')->int:
         number=Rational(number)
     if number<0:
         number = -number
+    from .number_functions import is_prime
+    if is_prime(number):
+        return number
     factors = []
     for prime in primes:
         if prime>number:break
@@ -107,8 +110,9 @@ def factorize(number:Rational|int, mode='std')->int:
     is_factors_simple = False
     while not is_factors_simple:
         is_factors_simple = True
+        from .number_functions import is_prime
         for index in range(0, len(factors)):
-            if factors[index] not in primes:
+            if not is_prime(factors[index]):
                 result = squfof(factors[index])
             else:
                 continue
@@ -139,20 +143,20 @@ def factorize(number:Rational|int, mode='std')->int:
         return factors_with_degrees
     return factors
 
-def divisors(number:int)->list:
+def divisors(number:int|list)->list:
     '''
         return list of all divisors for current number
     '''
-    divisors = []
-    factors = factorize(number)
-    iterator = 0
-    count = 1
-    for factor in set(factors):
-        divisors.append(factor)
-    while count != len(factors):
-        divisors.append(factors[iterator]*factors[iterator+1])
-        count+=1
-    #TODO
+
+    if type(number)==int or isinstance(number, Rational):
+        primes=factorize(number)
+    else:
+        primes=number
+    divisors = {1}
+    for factor in primes:
+        divisors |= {d * factor for d in divisors}
+    result=sorted(list(divisors))
+    return result
 
 def get_primes(limit: int) -> list:
     primes = [True] * (limit + 1)
