@@ -62,7 +62,8 @@ class SettingsHandler():
         set settings to a default values for a working space
         '''
         default_settings={
-                'mm_max_float_part':4,
+                'mm_number_floordiv_ceiling_up': False,
+                'mm_max_float_part':10,
                 'mm_dynamic_class_changing': False,
                 'mm_minimum_key_value' : 2,
                 'mm_maximum_key_value' : 2147483648,

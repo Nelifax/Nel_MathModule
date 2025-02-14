@@ -90,11 +90,7 @@ def gcd(*numbers:int|Rational)->int:
     else:
         a = numbers[0]
         b = numbers[1]
-    if is_prime(a) and is_prime(b):
-        if a%b==0:
-            return a//b
-        else:
-            return 1
+    if is_prime(a) and is_prime(b):return 1
     reminder = a-b*(a//b)
     while reminder != 0:
         reminder = a-b*(a//b)
@@ -196,7 +192,16 @@ def find_primitive_root(modulo:int, divisor_list:list=[], mode='asc'):
     is_root_found=False
     match(mode):
         case 'des':
-            pass
+            i=modulo-1
+            while not is_root_found:
+                check=True
+                for degree in divisor_list[1:-1]:
+                    if pow(i, degree, modulo)==1:
+                        check=False
+                        i-=1
+                        break
+                if check:
+                    return i
         case 'random':
             from ..objects.math_additions.Random import Random
             gen=Random()

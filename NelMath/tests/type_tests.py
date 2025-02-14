@@ -1,4 +1,4 @@
-﻿from NelMath.objects.math_constructions.Fraction import Fraction
+﻿from NelMath.objects.math_base.Fraction import Fraction
 from NelMath.objects.math_base import Rational, Number
 
 __all__ = ['type_test']

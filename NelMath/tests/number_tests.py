@@ -1,11 +1,10 @@
 ﻿from random import randint
-from NelMath.objects.math_base.Rational import Rational, MM_number_max_float_part
+from NelMath.objects.math_base.Rational import Rational
 
 __all__ = ['number_base_test']
 global test_cap
 test_cap = 500
 def number_base_test(reportType:str='full', **kwargs): 
-    MM_number_max_float_part = 10
     print('---Begin number testing---')
     test_count = 0
     done_count = 0

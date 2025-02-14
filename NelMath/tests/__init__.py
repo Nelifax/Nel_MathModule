@@ -35,7 +35,7 @@ def full_test(report_mode:str='full')->None:
     print(f'-------------------------------------------------------')    
     settings.release_working_settings()
 
-def solo_test(test_name:str='Rational', report_mode:str='full')->None:
+def solo_test(test_name:str='Number', report_mode:str='full')->None:
     '''
     start a test for 'class_name' class with report_mode
     allowed tests:
@@ -49,7 +49,6 @@ def solo_test(test_name:str='Rational', report_mode:str='full')->None:
     settings=SettingsHandler()
     settings.save_working_settings()
     settings.set_defaults()
-    print(settings.get('mm_dynamic_class_changing'))
     if report_mode not in ['full', 'short']: report_mode='full'
     print(f'Starting a test for {test_name} class with report_mode:{report_mode}')
     print('------------------------------------')

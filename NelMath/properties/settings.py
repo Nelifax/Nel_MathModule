@@ -1,13 +1,9 @@
 settings={
 #module settings
-    'mm_use_pregenerated_data':True,
-    'mm_pregenerated_data':{
-        'pd_primals':True,
-        'pd_factors':True,
-        'pd_constants':True
-        },
+    'mm_number_floordiv_ceiling_up': True, 
+    #if True then set sage-like ceiling ex:7//-5=-2. If false then set logic ceiling ex:7//-5=-1 
 #math base settings
-    'mm_max_float_part':4,
+    'mm_max_float_part':5,
     'mm_dynamic_class_changing': False,
 #crypto settings
     'mm_minimum_key_value' : 2,
@@ -16,6 +12,6 @@ settings={
     'mm_key_enable_number_repeating' : True,
     'mm_key_maximum_repeat_count' : -1,
 #funcion settings
-    'mm_MR_prime_max_tries' : 10,
+    'mm_MR_prime_max_tries' : 10, #equivalent to (1/2)^t mistake chance
     'mm_MR_prime_high_candidate_border': 100,
 }
