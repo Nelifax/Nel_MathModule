@@ -2,15 +2,16 @@ __all__=['Number']
 
 from NelMath.properties.settings_handler import SettingsHandler
 
-
 class Number():
+    __qualname__='Number'
+    __module__='Number'
     def __new__(cls, value, flags={}):        
         if cls is not Number:
             return super().__new__(cls)        
         settings=SettingsHandler()
         if ('type changing' in flags and flags['type changing']) or ('type changing' not in flags and settings.get('mm_dynamic_class_changing')):
             if Number.is_fraction(value):
-                from NelMath.objects.math_constructions import Fraction
+                from NelMath.objects.math_base import Fraction
                 return Fraction(value, cls._check_flags(flags, 'Fraction'))
             elif Number.is_rational(value):
                 from NelMath.objects.math_base.Rational import Rational
@@ -20,7 +21,7 @@ class Number():
                 from NelMath.objects.math_base.Rational import Rational
                 return Rational(value)
             elif Number.is_fraction(value):
-                from NelMath.objects.math_constructions import Fraction
+                from NelMath.objects.math_base import Fraction
                 return Fraction(value, cls._check_flags(flags, 'Fraction'))
             
 
@@ -68,7 +69,7 @@ class Number():
         from NelMath.objects.math_base.Rational import Rational
         if isinstance(value, Rational):
             return False
-        from NelMath.objects.math_constructions import Fraction
+        from NelMath.objects.math_base import Fraction
         if isinstance(value, Fraction):
             return True
         if type(value)==str:
@@ -111,7 +112,7 @@ class Number():
         from NelMath.objects.math_base.Rational import Rational
         if isinstance(value, Rational):
             return True
-        from NelMath.objects.math_constructions import Fraction
+        from NelMath.objects.math_base import Fraction
         if isinstance(value, Fraction):
             return False
         if type(value)==str:              
@@ -135,3 +136,59 @@ class Number():
         if len(value)==1:
             return Number.is_rational(value[0])
         return False
+
+    def __add__(self, other):
+        from NelMath.objects.math_base.Operators.Plus.OperatorPlus import OperatorPlus
+        return OperatorPlus().execute(self, other)
+
+    def __radd__(self, other):
+        from NelMath.objects.math_base.Operators.Plus.OperatorPlus import OperatorPlus
+        return OperatorPlus().execute(other, self)
+
+    def __sub__(self, other):        
+        from NelMath.objects.math_base.Operators.Minus.OperatorMinus import OperatorMinus
+        return OperatorMinus().execute(self, other)
+
+    def __rsub__(self, other):        
+        from NelMath.objects.math_base.Operators.Minus.OperatorMinus import OperatorMinus
+        return OperatorMinus().execute(other, self)
+
+    def __mul__(self, other):        
+        from NelMath.objects.math_base.Operators.Multiply.OperatorMultiply import OperatorMultiply
+        return OperatorMultiply().execute(self, other)
+
+    def __rmul__(self, other):        
+        from NelMath.objects.math_base.Operators.Multiply.OperatorMultiply import OperatorMultiply
+        return OperatorMultiply().execute(other, self)
+
+    def __truediv__(self, other):
+        from NelMath.objects.math_base.Operators.Division.OperatorTruediv import OperatorTruediv
+        return OperatorTruediv().execute(self, other)
+
+    def __rtruediv__(self, other):
+        from NelMath.objects.math_base.Operators.Division.OperatorTruediv import OperatorTruediv
+        return OperatorTruediv().execute(other, self)
+
+    def __floordiv__(self, other):
+        from NelMath.objects.math_base.Operators.Division.OperatorFloordiv import OperatorFloordiv
+        return OperatorFloordiv().execute(self, other)
+
+    def __rfloordiv__(self, other):
+        from NelMath.objects.math_base.Operators.Division.OperatorFloordiv import OperatorFloordiv
+        return OperatorFloordiv().execute(other, self)
+
+    def __pow__(self, exponent, modulo = None):
+        from NelMath.objects.math_base.Operators.Pow.OperatorPow import OperatorPow
+        return OperatorPow().execute(self, exponent, modulo)
+
+    def __mod__(self, other):
+        from NelMath.objects.math_base.Operators.Mod.OperatorMod import OperatorMod
+        return OperatorMod().execute(self, other)
+    
+    def __rmod__(self, other):
+        from NelMath.objects.math_base.Operators.Mod.OperatorMod import OperatorMod
+        return OperatorMod().execute(other, self)
+
+    def sqrt(self):
+        from NelMath.objects.math_base.Operators.Root.OperatorRoot import OperatorRoot
+        return OperatorRoot().execute(self, 2)

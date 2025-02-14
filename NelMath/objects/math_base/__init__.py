@@ -5,3 +5,5 @@ provides mathematical base for all calculations, such as rational number and con
 from .Rational import *
 from .Constant import *
 from .Number import *
+from .Fraction import *
+from .Irrational import *

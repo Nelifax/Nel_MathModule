@@ -1,17 +1,15 @@
 __all__ = ['Fraction']
 
-from NelMath.objects.math_base.Rational import Rational, MM_number_max_float_part
+from NelMath.objects.math_base.Rational import Rational
 from NelMath.objects.math_base.Number import Number
 from NelMath.functions.number_functions import lcm, gcd
-from .Math_object import Math_object
 from NelMath.properties.settings_handler import SettingsHandler
 
 class Fraction(Number):
     """
     provides class to operate with fractions
     can build fractions from whatever type of data: int|float|list|tuple|str. Best way - list|tuple:[numerator, denominator]
-    """
-    
+    """    
     def __new__(cls, value, flags={}):
         settings=SettingsHandler()
         if ('type changing' in flags and flags['type changing']) or ('type changing' not in flags and settings.get('mm_dynamic_class_changing')):            
@@ -118,8 +116,9 @@ class Fraction(Number):
             self.__sign_invert()
             self.references['denominator']._Rational__sign_invert()
         self.standartize()
-        self.simplify()        
-        self.value=self.references['integer part'] + Rational.__truediv__(self.references['numerator'], self.references['denominator'], 'fraction')
+        self.simplify()   
+        from NelMath.objects.math_base.Operators.Division.OperatorTruedivRR import OperatorTruedivRR
+        self.value=self.references['integer part'] + OperatorTruedivRR().execute(self.references['numerator'], self.references['denominator'])
         if self.sign=='-':
             self.value=-self.value
     
@@ -132,7 +131,7 @@ class Fraction(Number):
             self.references['numerator'] = self.references['numerator']-self.references['denominator']*self.references['integer part']
         if self.references['numerator']==self.references['denominator']:
             self.references['integer part']+=1
-            self.references['numerator']=0
+            self.references['numerator']=Rational(0)
         if self.references['numerator']==0:
             return Rational(self.references['integer part'])
         if self.references['numerator']==self.references['denominator']:
@@ -195,108 +194,6 @@ class Fraction(Number):
                 return neg          
         neg.__sign_invert()
         return neg
-   
-    def __mul__(self, other)->'Fraction':
-        if isinstance(other, Fraction): 
-            self.improper_view()
-            other.improper_view()            
-            if self.sign==other.sign:
-                return Fraction([self.references['numerator']*other.references['numerator'], self.references['denominator']*other.references['denominator']])
-            else:
-                return -Fraction([self.references['numerator']*other.references['numerator'], self.references['denominator']*other.references['denominator']])
-        else:
-            return self*Fraction(other)
-
-    def __rmul__(self, other)->'Fraction':
-        return self*other
-
-    def __truediv__(self, other)->'Fraction':
-        if isinstance(other, Fraction):            
-            self.improper_view()
-            other.improper_view()
-            if self.sign==other.sign:
-                return Fraction([self.references['numerator']*other.references['denominator'], self.references['denominator']*other.references['numerator']])
-            else:
-                return -Fraction([self.references['numerator']*other.references['denominator'], self.references['denominator']*other.references['numerator']])
-        else:
-            return self/Fraction(other)
-
-    def __rtruediv__(self, other) -> 'Rational':
-        if isinstance(other, Fraction):            
-            self.improper_view()
-            other.improper_view()
-            if self.sign==other.sign:
-                return Fraction([other.references['numerator']*self.references['denominator'], other.references['denominator']*self.references['numerator']])
-            else:
-                return -Fraction([other.references['numerator']*self.references['denominator'], other.references['denominator']*self.references['numerator']])
-        else:
-            return Fraction(other)/self
-
-    def __add__(self, other)-> 'Fraction':
-        if isinstance(other, Fraction):
-            self.improper_view()
-            other.improper_view()
-            if self.references['denominator']==other.references['denominator']:
-                if self.sign==other.sign:
-                    if self.sign == '-':
-                        return -Fraction([self.references['numerator']+other.references['numerator'], self.references['denominator']])
-                    else:
-                        return Fraction([self.references['numerator']+other.references['numerator'], self.references['denominator']])
-                else:
-                    numerator=Rational(f'{self.sign}'+str(self.references['numerator']))+Rational(f'{other.sign}'+str(other.references['numerator']))
-                    if numerator.sign=='-':
-                        return -Fraction([numerator, self.references['denominator']])
-                    else:
-                        return Fraction([numerator, self.references['denominator']])
-            else:
-                fraction_lcm=lcm(self.references['denominator'], other.references['denominator'])
-                self.__transform_mul(fraction_lcm/self.references['denominator'])
-                other.__transform_mul(fraction_lcm/other.references['denominator'])
-                return self+other                
-        else:
-            return self+Fraction(other)
-
-    def __radd__(self, other):
-        return self+Fraction(other)
-
-    def __sub__(self, other) -> 'Fraction':
-        if isinstance(other, Fraction):
-            self.improper_view()
-            other.improper_view()
-            if self.references['denominator']==other.references['denominator']:
-                match(self.sign, other.sign):
-                    case('-','-'):
-                        if self.references['numerator']>other.references['numerator']:
-                            return -Fraction([self.references['numerator']-other.references['numerator'],self.references['denominator']])
-                        elif self.references['numerator']<other.references['numerator']:
-                            return Fraction([other.references['numerator']-self.references['numerator'],self.references['denominator']])
-                        else: return Fraction(0)
-                    case('+','+'):
-                        if self.references['numerator']>other.references['numerator']:
-                            return Fraction([self.references['numerator']-other.references['numerator'],self.references['denominator']])
-                        elif self.references['numerator']<other.references['numerator']:
-                            return -Fraction([other.references['numerator']-self.references['numerator'],self.references['denominator']])
-                        else: return Fraction(0)
-                    case('-','+'):
-                        return -Fraction([self.references['numerator']+other.references['numerator'],self.references['denominator']])
-                    case('+','-'):
-                        return Fraction([self.references['numerator']+other.references['numerator'],self.references['denominator']])
-            else:
-                fraction_lcm=lcm(self.references['denominator'], other.references['denominator'])
-                self.__transform_mul(fraction_lcm/self.references['denominator'])
-                other.__transform_mul(fraction_lcm/other.references['denominator'])
-                return self-other
-        else:
-            return self-Fraction(other)
-
-    def __rsub__(self, other) -> 'Fraction':
-        return Fraction(other)-self
-
-    def __mod__(self, value):        
-        return Rational(self.value%value)
-
-    def __pow__(self, value, modulo = None, mode = 'std'):
-        pass
 
     def __eq__(self, other)->bool:
         if other=='':

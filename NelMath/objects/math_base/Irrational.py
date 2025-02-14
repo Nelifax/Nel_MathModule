@@ -1,13 +1,13 @@
-from .Math_object import Math_object
+from NelMath.objects.math_base.Number import Number
 from NelMath.objects.math_base.Rational import Rational
 import re
 
 __all__ = ['Irrational']
 
-class Irrational(Math_object):
-    def __init__(self, value, flags={}):
+class Irrational(Number):
+    def __init__(self, value, degree=Rational(1), flags={}):
         '''
-        provides string-based class for irrational numbers. it will not calculate the references but will aply math functions to irrationals
+        provides string-based class for irrational numbers.
         '''
         if isinstance(value, Rational):
             super().__init__(value)
@@ -15,8 +15,7 @@ class Irrational(Math_object):
             del(self._Rational__flags)
             self.__flags['parts as Rational'] = True
             self.__flags['calculate value'] = True
-            self.references['degree'] = Rational(1)
-            self.references['irrational parts'] = [Rational(self.value)]
+            self.references['degree'] = degree
             self.__flags.update({'type': 'irrational'})
         else:
             self.__flags = {
