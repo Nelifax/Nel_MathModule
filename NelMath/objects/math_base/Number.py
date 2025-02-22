@@ -152,6 +152,22 @@ class Number():
     def __rsub__(self, other):        
         from NelMath.objects.math_base.Operators.Minus.OperatorMinus import OperatorMinus
         return OperatorMinus().execute(other, self)
+    
+    def __sign_invert(self):
+        if self.sign == '+':
+            self.sign = '-'
+            self.value = '-'+self.value
+        else:
+            self.sign = '+'
+            self.value = self.value[1:]
+
+    def __neg__(self):
+        neg = self.copy()
+        if neg.references['float part'] == '0' and neg.references['integer part'] == '0':
+            if neg.sign == '+':
+                return neg          
+        neg.__sign_invert()
+        return neg
 
     def __mul__(self, other):        
         from NelMath.objects.math_base.Operators.Multiply.OperatorMultiply import OperatorMultiply
@@ -189,6 +205,36 @@ class Number():
         from NelMath.objects.math_base.Operators.Mod.OperatorMod import OperatorMod
         return OperatorMod().execute(other, self)
 
-    def sqrt(self):
+    def sqrt(self, precision:int=0):
         from NelMath.objects.math_base.Operators.Root.OperatorRoot import OperatorRoot
-        return OperatorRoot().execute(self, 2)
+        return OperatorRoot().execute(self, 2, precision)
+
+    def nroot(self, exponent, precision:int=0):
+        from NelMath.objects.math_base.Operators.Root.OperatorRoot import OperatorRoot
+        return OperatorRoot().execute(self, exponent, precision)
+
+    def __abs__(self):
+        if self.sign == '-':
+            return -self
+        else:
+            return self
+
+    def __int__(self)->int:
+        if self.sign == '-':
+            return -int(self.references['integer part'])
+        else:
+            return int(self.references['integer part'])
+
+    def __index__(self):
+        if self.references['float part']=='0':
+            return int(self.value)
+        raise TimeoutError('Number has an float part')
+
+    def __float__(self)->float:       
+        return float(self.value)
+
+    def __str__(self)->str:
+        return str(self.value)
+
+    def __hash__(self):
+        return hash(self.value)

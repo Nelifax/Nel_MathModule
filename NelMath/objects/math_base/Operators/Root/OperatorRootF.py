@@ -1,14 +1,14 @@
-from NelMath.objects.math_base.Operators.Pow.OperatorPow import OperatorPow
+from NelMath.objects.math_base.Operators.Root.OperatorRoot import OperatorRoot
 from NelMath.objects.math_base.Fraction import Fraction
 
-class OperatorPowF(OperatorPow):    
+class OperatorRootF(OperatorRoot):    
     @staticmethod
-    def execute(operand: Fraction, exponent: any, modulo: any = None):
-        from NelMath.objects.math_base.Operators.Pow.OperatorPowR import OperatorPowR
-        operand.improper_view()
-        numerator=operand.references['numerator'].copy()
-        denominator=operand.references['denominator'].copy()
-        if exponent<0:
-            return Fraction([OperatorPowR.execute(denominator, -exponent, modulo), OperatorPowR.execute(numerator, -exponent, modulo)], operand._Fraction__flags)
-        else:
-            return Fraction([OperatorPowR.execute(numerator, exponent, modulo), OperatorPowR.execute(denominator, exponent, modulo)], operand._Fraction__flags)
+    def execute(operand: Fraction, exponent: any, precision=0):
+        if operand.sign == '-' and exponent%2==0:
+            raise TimeoutError('NOT IMPLEMENTED YET')        
+        fraction = operand.copy()  
+        fraction.improper_view()
+        from NelMath.objects.math_base.Operators.Root.OperatorRootR import OperatorRootR
+        numerator = OperatorRootR.execute(fraction.references['numerator'], exponent, precision)
+        denominator = OperatorRootR.execute(fraction.references['denominator'], exponent, precision)         
+        return Fraction([numerator, denominator], fraction._Fraction__flags)

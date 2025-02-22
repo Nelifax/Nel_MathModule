@@ -111,10 +111,10 @@ class Fraction(Number):
             raise TimeoutError()
         if self.references['numerator'].sign=='-':
             self.__sign_invert()
-            self.references['numerator']._Rational__sign_invert()
+            self.references['numerator']._Number__sign_invert()
         if self.references['denominator'].sign=='-':
             self.__sign_invert()
-            self.references['denominator']._Rational__sign_invert()
+            self.references['denominator']._Number__sign_invert()
         self.standartize()
         self.simplify()   
         from NelMath.objects.math_base.Operators.Division.OperatorTruedivRR import OperatorTruedivRR

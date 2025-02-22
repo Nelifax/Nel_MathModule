@@ -18,9 +18,9 @@ class OperatorTruedivRR(OperatorTruediv):
             case _:
                 invert = True
         if numb_a.sign == '-':
-            numb_a._Rational__sign_invert()
+            numb_a._Number__sign_invert()
         if numb_b.sign == '-':
-            numb_b._Rational__sign_invert()
+            numb_b._Number__sign_invert()
         if operand_b.value == '10':
             float_part = numb_a.references['float part']
             integer_part = numb_a.references['integer part']

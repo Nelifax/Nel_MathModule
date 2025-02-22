@@ -8,13 +8,9 @@ class OperatorPow(Operator):
         if type(exponent) in {int, float, str}: exponent=Rational(exponent)
         if type(modulo) in {int, float, str}: modulo=Rational(modulo)
         if isinstance(exponent, Rational) and exponent.references['float part']=='0':
-            if isinstance(operand, Rational):            
-                if operand.references['float part']=='0':
-                    from NelMath.objects.math_base.Operators.Pow.OperatorPowR import OperatorPowR
-                    return OperatorPowR.execute(operand, exponent, modulo)
-                else:
-                    from NelMath.objects.math_base.Operators.Pow.OperatorPowF import OperatorPowF
-                    return Rational((OperatorPowF.execute(Fraction(operand), exponent, modulo)).value)
+            if isinstance(operand, Rational):
+                from NelMath.objects.math_base.Operators.Pow.OperatorPowR import OperatorPowR
+                return OperatorPowR.execute(operand, exponent, modulo)
             if isinstance(operand, Fraction):            
                 from NelMath.objects.math_base.Operators.Pow.OperatorPowF import OperatorPowF
                 return OperatorPowF.execute(operand, exponent, modulo)

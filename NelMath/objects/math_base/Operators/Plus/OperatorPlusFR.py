@@ -7,12 +7,12 @@ class OperatorPlusFR(OperatorPlus):
         operand_a.improper_view()
         match (operand_a.sign, operand_b.sign):
             case ('-', '-'):
-                operand_b._Rational__sign_invert()
+                operand_b._Number__sign_invert()
                 numerator=-(operand_a.references['numerator']+operand_b*operand_a.references['denominator'])
             case ('-', '+'):
                 numerator=operand_b*operand_a.references['denominator']-operand_a.references['numerator']
             case ('+', '-'):
-                operand_b._Rational__sign_invert()
+                operand_b._Number__sign_invert()
                 numerator=operand_a.references['numerator']-operand_b*operand_a.references['denominator']
             case _:
                 numerator=operand_a.references['numerator']+operand_b*operand_a.references['denominator']

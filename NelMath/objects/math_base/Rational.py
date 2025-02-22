@@ -61,24 +61,8 @@ class Rational(Number):
             self.value = '0'
             self.__sign_invert()
 
-    def __sign_invert(self):
-        if self.sign == '+':
-            self.sign = '-'
-            self.value = '-'+self.value
-        else:
-            self.sign = '+'
-            self.value = self.value[1:]
-
     def copy(self)->'Rational':
         return Rational(self.value, self.__flags)
-
-    def __neg__(self):
-        neg = self.copy()
-        if neg.references['float part'] == '0' and neg.references['integer part'] == '0':
-            if neg.sign == '+':
-                return neg          
-        neg.__sign_invert()
-        return neg
 
     def __lt__(self, other):#< 
         if not isinstance(other, Rational):
@@ -188,8 +172,7 @@ class Rational(Number):
         else:
             return False
     
-    def __hash__(self):
-        return hash(self.value)
+    
 
     def __eq__(self, other):
         if other=='' or other == None:
@@ -210,13 +193,13 @@ class Rational(Number):
     def __ne__(self, other):
         return not self.__eq__(other)
     
-    def __abs__(self):
-        if self.sign == '-':
-            return -self
-        else:
-            return self
+    
 
     def __self_round_float(self, mode = 'std')->'Rational':
+        if self.sign=='-': 
+            inverse=True
+            self=-self
+        else: inverse=False
         if mode != 'std':
             if len(self.references['float part'])>self.__flags['max float part']*2:
                 bord_float = self.references['float part'][self.__flags['max float part']*2]
@@ -226,65 +209,33 @@ class Rational(Number):
                     if self.references['float part'] == '0':
                         return self
                     self=self+Rational('0.'+'0'*(self.__flags['max float part']*2-1)+'1', {'max float part':self.__flags['max float part']})
-                    return self
+                    return -self if inverse else self
                 else:
                     values = self.value.split('.')
                     self=Rational(values[0]+'.'+values[1][0:self.__flags['max float part']*2], {'max float part':self.__flags['max float part']})
-                    return self
+                    return -self if inverse else self
             else:
-                return self
+                return -self if inverse else self
         if len(self.references['float part'])>self.__flags['max float part']:
             bord_float = self.references['float part'][self.__flags['max float part']]
             if bord_float>'4':
                 values = self.value.split('.')
                 self=Rational(values[0]+'.'+values[1][0:self.__flags['max float part']], {'max float part':self.__flags['max float part']})
                 if self.references['float part'] == '0':
-                    return self
+                    return -self if inverse else self
                 self=self+Rational('0.'+'0'*(self.__flags['max float part']-1)+'1', {'max float part':self.__flags['max float part']})
-                return self
+                return -self if inverse else self
             else:
                 values = self.value.split('.')
                 self=Rational(values[0]+'.'+values[1][0:self.__flags['max float part']], {'max float part':self.__flags['max float part']})
-                return self
+                return -self if inverse else self
         else:
-            return self
+            return -self if inverse else self
 
-    def nroot(self, exp)->'Rational':
-        if type(exp) != int and not isinstance(exp, Rational):
-            from NelMath.objects.math_base.Fraction import Fraction
-            exp = Fraction(str(exp))
-            return self.nroot(exp.references['denominator'])
-        if not isinstance(exp, Rational):
-            exp = Rational(exp, {'max float part':self.__flags['max float part']})
-        if self.sign == '-' and exp%2==0:
-            raise TimeoutError('NOT IMPLEMENTED YET')        
-        numb = self.copy()
-        result = Rational(1, {'max float part':self.__flags['max float part']})
-        border = Rational('0.'+'0'*(int(self.__flags['max float part'])-1)+'1', {'max float part':self.__flags['max float part']})
-        while True:
-            result_next = ((exp - 1).__mul__(result, 'nroot') + numb.__truediv__(result.__pow__(exp - 1, mode='nroot'), 'nroot')).__truediv__(exp, 'nroot')
-            if abs(result_next - result) < border:
-                break
-            result = result_next
-        return result.__self_round_float()
-
-    def __str__(self)->str:
-        return str(self.value)
+    
 
     def __repr__(self)->str:
         return f'Number.Rational'
-
-    def __int__(self)->int:
-        if self.sign == '-':
-            return -int(self.references['integer part'])
-        else:
-            return int(self.references['integer part'])
-
-    def __float__(self)->float:       
-        if self.sign == '-':
-            return -float(self.references['integer part']+'.'+self.references['float part'][0:self.__flags['max float part']])
-        else:
-            return float(self.references['integer part']+'.'+self.references['float part'][0:self.__flags['max float part']])
 
     def __format__(self, format_spec):        
         if format_spec == "hex":

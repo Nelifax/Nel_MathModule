@@ -11,7 +11,15 @@ class OperatorPowR(OperatorPow):
                 return Rational(1, {'max float part':operand._Rational__flags['max float part']})
             if modulo==None:
                 if exp.sign == '+':
-                    return numb.__mul__(numb.__pow__(exp-1, None))
+                    if exp==2:
+                        return numb.__mul__(numb)
+                    result=Rational(1)
+                    while exp > 0:
+                        if exp % 2 == 1:
+                            result=result.__mul__(numb)
+                        numb=numb**2
+                        exp //= 2
+                    return result
                 else:
                     exp._Rational__sign_invert()
                     return 1/(numb.__pow__(exp, None))

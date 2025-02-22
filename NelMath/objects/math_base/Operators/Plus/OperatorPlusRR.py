@@ -10,8 +10,8 @@ class OperatorPlusRR(OperatorPlus):
             return Rational('0', {'max float part':operand_a._Rational__flags['max float part']})
         match(numb_a.sign, numb_b.sign):
             case ('-', '-'):            
-                numb_a._Rational__sign_invert()
-                numb_b._Rational__sign_invert()
+                numb_a._Number__sign_invert()
+                numb_b._Number__sign_invert()
                 return -(numb_a+numb_b)
             case ('-', '+'):
                 if -numb_a > numb_b:

@@ -351,7 +351,7 @@ def number_base_test(reportType:str='full', **kwargs):
         ['10023006', '1002', '%', f'numb(module test): ', 0],
 
         ['74.148222', '-74', '%', f'numb(module test): ', 0.148222],
-        ['-0.1', '256', '%', f'numb(module test): ', 255.9],
+        ['-0.1', '256', '%', f'numb(module test): ', -0.1],
         ['12193263111.263526', '-987654321', '%', f'numb(module test): ', 341411259.263526],
         ['98765', '1.234', '%', f'numb(module test): ', 0.576],
         ['-1250000', '-500', '%', f'numb(module test): ', 0],
@@ -362,7 +362,7 @@ def number_base_test(reportType:str='full', **kwargs):
                         
         ['10.001', '10.009', '%', f'numb(module test): ', 10.001],
         ['10.1001', '-1.0002', '%', f'numb(module test): ', 0.0981],
-        ['-10.01', '109.91', '%', f'numb(module test): ', 99.9],
+        ['-10.01', '109.91', '%', f'numb(module test): ', -10.01],
         ['-10.99999', '-89.00001', '%', f'numb(module test): ', -10.99999],
 
         #SQRT tests
@@ -385,7 +385,7 @@ def number_base_test(reportType:str='full', **kwargs):
         ['115', '0', 'sqrt', f'finding a sqrt of int(115) periodic', 10.7238052948],
         ['123456789', '0', 'sqrt', f'finding a sqrt of int(123456789) periodic', 11111.1110605556],
         ['987654321', '0', 'sqrt', f'finding a sqrt of int(987654321) periodic', 31426.9680529319],
-        ['102030401', '0', 'sqrt', f'finding a sqrt of int(102030405) periodic', 10101.009900005],            
+        ['102030401', '0', 'sqrt', f'finding a sqrt of int(102030401) periodic', 10101.009900005],            
         ['101010101', '0', 'sqrt', f'finding a sqrt of int(101010101) periodic', 10050.3781520896],
 
         #NROOT tests
@@ -395,7 +395,7 @@ def number_base_test(reportType:str='full', **kwargs):
         ['1024', '10', 'nroot', f'finding a nroot(10) of int(1024=2^10) not periodic', 2],
         ['81', '2', 'nroot', f'finding a nroot(2) of int(81=9^2) not periodic', 9],
         ['27', '3', 'nroot', f'finding a nroot(3) of int(27=3^3) not periodic', 3],
-        ['625', '4', 'nroot', f'finding a nroot(4) of int(625=5^3) not periodic', 5],
+        ['625', '4', 'nroot', f'finding a nroot(4) of int(625=5^4) not periodic', 5],
         ['134217728', '27', 'nroot', f'finding a nroot(27) of int(134217728=2^27) not periodic', 2],
         ['2', '3', 'nroot', f'finding a nroot(3) of int(2) periodic', 1.2599210499],
         ['313', '5', 'nroot', f'finding a nroot(5) of int(313) periodic', 3.1557956087],
