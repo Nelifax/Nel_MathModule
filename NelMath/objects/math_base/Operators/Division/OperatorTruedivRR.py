@@ -10,6 +10,11 @@ class OperatorTruedivRR(OperatorTruediv):
             raise ZeroDivisionError()
         if operand_a.value == '0':
             return Rational(0, {'max float part':operand_a._Rational__flags['max float part']})
+        from NelMath.properties.settings_handler import SettingsHandler
+        settings=SettingsHandler()
+        if numb_a._Rational__flags['type changing'] and numb_b._Rational__flags['type changing']:
+            from NelMath import Fraction
+            return Fraction([numb_a,numb_b])
         match (numb_a.sign, numb_b.sign):
             case ('+', '+'):
                 invert = False

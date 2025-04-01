@@ -1,6 +1,5 @@
 from NelMath.objects.math_base.Number import Number
 from NelMath.objects.math_base.Rational import Rational
-import re
 
 __all__ = ['Irrational']
 
@@ -30,24 +29,14 @@ class Irrational(Number):
 
             self.references = {
             'integer part': '0',
-            'float part': '0',   
+            'float part': '0', 
+            'degree':'1',
             }
-            parts = re.findall(r'\+*\-*\d*\^\d*', value)
-            if parts == []:
-                raise TimeoutError()
-            if len(parts)==1:
-                self.references['degree'] = Rational(parts[0].split('^')[1])
-                self.references['base'] = Rational(parts[0].split('^')[0])
-                if self.__flags['calculate value']:
-                    self.value=pow(self.references['base'], self.references['degree'])
-                return
-  
-            else:
-                self.references['irrational parts'] = []
-            for part in parts:
-                value=value.replace(part, '')
-                self.references['irrational parts'].append(Irrational(part))
-            if value!='':
-                raise TimeoutError() 
+            self.value=self.__flags['sign']+self.references['integer part']+'.'+self.references['float part']
+
+    def print(self):
+        deg=self.references['degree']
+        print(f'Irrational with base {self.value}^{deg}')
+            
             
             

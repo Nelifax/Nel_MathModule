@@ -37,7 +37,7 @@ def squfof(number:int)->list:
         Q_d = Q.copy()
         Q = t.copy()
         P = P_s.copy()
-        if i % 2 == 1 or isqrt(int(Q))**2-Q != 0:
+        if i % 2 == 1 or Rational(Q.sqrt().references['integer part'])**2-Q != '0':
             i += 1
             continue
         else:
@@ -84,64 +84,58 @@ def factorize(number:Rational|int, mode='std')->list:
         number = -number
     from .number_functions import is_prime
     if is_prime(number):
-        return number
+        return [int(number)]
     factors = []
     for prime in primes:
         if prime>number:break
         while number%prime==0:
             number = number/prime
-            factors.append(prime)    
+            factors.append((prime, True))  
     if number == 1:
         if mode=='degrees':
+            factors=[factor[0] for factor in factors]
             unique_factors=set(factors)
+            unique_factors=sorted(unique_factors)
             factors_with_degrees = []
             for elem in unique_factors:
                 factors_with_degrees.append((elem, factors.count(elem)))
             return factors_with_degrees
+        factors = [int(factor[0]) for factor in factors]
+        factors.sort()
         return factors
+    if is_prime(number):
+        factors.append((number, True))
+        number=1
+    else:
+        factors.append((number, False))
     while number != 1:
-        factor = squfof(number)
-        if factor == 1:
-            factors.append(number)
-            number = 1
-            continue
-        number = number/factor
-        factors.append(factor)
-    is_factors_simple = False
-    while not is_factors_simple:
-        is_factors_simple = True
-        from .number_functions import is_prime
-        for index in range(0, len(factors)):
-            if not is_prime(factors[index]):
-                result = squfof(factors[index])
-            else:
+        for element in range(len(factors)):
+            if factors[element][1]==True:
                 continue
-            if result != 1 and result != factors[index]:
-                factors.append(int(result))
-                factors[index] = int(factors[index]/result)
-                is_factors_simple = False
-    for index in range(0, len(factors)):
-        for prime in primes:
-            if prime>factors[index]:break
-            while factors[index] % prime == 0:
-                factors.append(prime)
-                factors[index] = int(factors[index]/prime)
-    for factor in factors:
-        if isinstance(factor, Rational):
-            factors[factors.index(factor)]=int(factor)
-            
-    factors.sort()
-    if 1 in factors:
-        factors.reverse()
-        factors = factors[:factors.index(1)]
-        factors.reverse()
+            factor=squfof(factors[element][0])
+            factors.pop(element)
+            if is_prime(factor):
+                factors.append((factor, True))
+            else:
+                factors.append((factor, False))
+            number=number/factor
+            if is_prime(number):
+                factors.append((number, True))
+                number=1
+            else:
+                factors.append((number, False))
     if mode=='degrees':
+        factors=[int(factor[0]) for factor in factors]
         unique_factors=set(factors)
+        unique_factors=sorted(unique_factors)
         factors_with_degrees = []
         for elem in unique_factors:
             factors_with_degrees.append((elem, factors.count(elem)))
         return factors_with_degrees
+    factors = [int(factor[0]) for factor in factors]
+    factors.sort()
     return factors
+        
 
 def divisors(number:int|list)->list:
     '''

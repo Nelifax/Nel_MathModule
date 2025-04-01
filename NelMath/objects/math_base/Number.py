@@ -237,4 +237,23 @@ class Number():
         return str(self.value)
 
     def __hash__(self):
-        return hash(self.value)
+        return hash(self.value)    
+
+    def __format__(self, format_spec):        
+        if format_spec == "hex":
+            return hex(self.value)
+        elif format_spec == "bin":
+            return bin(self.value)
+        elif format_spec:
+            return format(str(self.value), format_spec)
+        else:
+            return self.__str__()
+
+    def __repr__(self):
+        return str(self.value)
+
+    def __round__(self):
+        if '.' in self.value:
+            if self.value.split('.')[1][0]>='5':
+                return self+1
+        else: return self

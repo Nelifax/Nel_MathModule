@@ -6,3 +6,4 @@ from .linear_algebra import *
 from .math_additions import *
 from .math_base import *
 from .math_constructions import *
+from .applied_algebra import *

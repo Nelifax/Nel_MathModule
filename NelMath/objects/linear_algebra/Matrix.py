@@ -1,13 +1,15 @@
 from math import e
 from NelMath.objects.errors.Error import MatrixError
 from NelMath.objects.math_base.Rational import Rational, Number
+from NelMath.objects.linear_algebra.Linear_object import Linear_object
 
 __all__=['MM_matrix_manual', 'Matrix']
 
 global MM_matrix_manual
 MM_matrix_manual = True;
 
-class Matrix():
+class Matrix(Linear_object):
+    __module__="LinearAlgebra"
     MM_matrix_factor_standart = 0
     MM_matrix_factor_diagonal = 1
     MM_matrix_form_square = 0
@@ -281,7 +283,7 @@ class Matrix():
         self.__flags['transposed'] = True
         self.__flags['dimension'] = (self.__flags['rows'], self.__flags['columns'])
         self.values = newValues
-        self.find_determinant()
+        #self.find_determinant()
         saveattr = self.rows
         self.rows = self.columns
         self.columns = saveattr

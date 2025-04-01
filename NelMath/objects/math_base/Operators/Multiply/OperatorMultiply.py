@@ -1,3 +1,4 @@
+import NelMath
 from NelMath.objects.math_base.Operators.Operator import Operator
 
 class OperatorMultiply(Operator):
@@ -6,6 +7,9 @@ class OperatorMultiply(Operator):
         from NelMath.objects import Rational, Fraction
         if type(operand_a) in {int, float, str}: operand_a=Rational(operand_a)
         if type(operand_b) in {int, float, str}: operand_b=Rational(operand_b)
+        if isinstance(operand_b, NelMath.objects.math_constructions.Equation):
+            from NelMath.objects.math_constructions.Equation import Equation
+            return operand_b.__mul__(operand_a)
         if isinstance(operand_a, Rational):
             if isinstance(operand_b, Rational):
                 from NelMath.objects.math_base.Operators.Multiply.OperatorMultiplyRR import OperatorMultiplyRR

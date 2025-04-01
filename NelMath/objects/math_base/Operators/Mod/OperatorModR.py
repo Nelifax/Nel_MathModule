@@ -25,5 +25,14 @@ class OperatorModR(OperatorMod):
             deg+=1 
         if numb_b == 1:
             return Rational(0, {'max float part':operand_a._Rational__flags['max float part']})
+        from NelMath.properties.settings_handler import SettingsHandler
+        settings=SettingsHandler()
         numb_a = numb_a-numb_b*(numb_a//numb_b)
-        return numb_a/10**deg    
+        numb_a = numb_a/10**deg   
+        if settings.get('mm_modulo_negative_results'):
+            return numb_a
+        else:
+            while numb_a<0:
+                numb_a+numb_b
+            return numb_a
+

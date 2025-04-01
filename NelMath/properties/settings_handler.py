@@ -65,6 +65,7 @@ class SettingsHandler():
                 'mm_number_floordiv_ceiling_up': False,
                 'mm_max_float_part':10,
                 'mm_dynamic_class_changing': False,
+                'mm_modulo_negative_results': True,
                 'mm_minimum_key_value' : 2,
                 'mm_maximum_key_value' : 2147483648,
                 'mm_key_only_primals' : True,

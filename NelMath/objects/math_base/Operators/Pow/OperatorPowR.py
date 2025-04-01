@@ -35,7 +35,8 @@ class OperatorPowR(OperatorPow):
                         exp //= 2
                         if numb>modulo:
                             numb=numb%modulo
-                    return result%modulo
+                    result=result%modulo
+                    return result if result>0 else result+modulo
                 else:
                     from NelMath.functions.number_functions import gcd, is_prime
                     if gcd(numb, modulo)!=1:

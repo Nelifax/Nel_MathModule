@@ -234,17 +234,10 @@ class Rational(Number):
 
     
 
-    def __repr__(self)->str:
-        return f'Number.Rational'
+    #def __repr__(self)->str:
+        #return f'Number.Rational'
 
-    def __format__(self, format_spec):        
-        if format_spec == "hex":
-            return hex(self.value)
-        elif format_spec == "bin":
-            return bin(self.value)
-        elif format_spec:
-            return format(str(self.value), format_spec)
-        else:
-            return self.__str__()
+    def __hash__(self):
+        return hash(self.value)
 
 

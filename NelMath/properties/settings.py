@@ -5,6 +5,8 @@ settings={
 #math base settings
     'mm_max_float_part':5,
     'mm_dynamic_class_changing': False,
+    'mm_modulo_negative_results': True,
+    #if True then set a%b operation result as -c when a>b (python-like behavior). If False then set a%b operation always positive
 #crypto settings
     'mm_minimum_key_value' : 2,
     'mm_maximum_key_value' : 2147483648,

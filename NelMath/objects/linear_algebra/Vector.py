@@ -1,10 +1,11 @@
+from NelMath.objects.linear_algebra.Linear_object import Linear_object
 __all__ = ['Vector']
 
-class Vector():
+class Vector(Linear_object):
     def __init__(self, values:list):
-        self.values = values
+        self.data = values
         self.__flags = {
-            'Length': Vector.find_length(self),
+            'Length': 0,
             'Dimension': len(values),
             'Normalized': False,
             'Unit': Vector.is_vector_unit(self)
@@ -12,10 +13,11 @@ class Vector():
         
     @staticmethod
     def find_length(vector:'Vector')->int|float:
-        length = 0
-        for i in range(0, len(vector.values)):
-            length+=vector.values[i]**2
-        return length**0.5
+        from NelMath import Rational
+        length = Rational(0)
+        for i in range(0, len(vector.data)):
+            length+=vector.data[i]**2
+        return length.sqrt()
 
     @staticmethod
     def find_sinus(vector_A:'Vector', vector_B:'Vector')->float:
@@ -23,17 +25,17 @@ class Vector():
 
     @staticmethod
     def is_vectors_collinear(vector_A:'Vector', vector_B:'Vector')->bool:        
-        if len(vector_A.values) != len(vector_B.values):
+        if len(vector_A.data) != len(vector_B.data):
             raise TimeoutError()
-        if vector_A.len == 0 or vector_B.len == 0:
+        if vector_A.__flags['Length'] == 0 or vector_B.__flags['Length'] == 0:
             return True
         result = []
-        for i in range(0, len(vector_A.values)):
+        for i in range(0, len(vector_A.data)):
             if vector_B[i] == 0 and vector_A[i] != 0:
                 return False
             elif vector_B[i] == 0 and vector_A[i] == 0:
                 continue
-            result.append(vector_A.values[i]/vector_B.values[i])
+            result.append(vector_A.data[i]/vector_B.data[i])
         if len(set(result)) == 1:
             return True
         else: return False
@@ -57,19 +59,20 @@ class Vector():
             return False
 
     def normalize(self):
-        for i in range(0, len(self.values)):
-            self.values[i] = self.values[i]/self.__flags['Length']
+        for i in range(0, len(self.data)):
+            self.data[i] = self.data[i]/self.__flags['Length']
         self.__flags['Normalized'] = True
         self.__flags['Unit'] = Vector.is_vector_unit(self)
+        self.__flags['Length'] = 1
         return self
 
     @staticmethod
     def is_vector_unit(vector:'Vector')->bool:
         has_unit = False
-        for i in range (0, len(vector.values)):
-            if vector.values[i] == 0:
+        for i in range (0, len(vector.data)):
+            if vector.data[i] == 0:
                 continue
-            elif vector.values[i] == 1:
+            elif vector.data[i] == 1:
                 if has_unit:
                     return False
                 else:
@@ -86,29 +89,29 @@ class Vector():
         else: return False
     
     def __add__(self, addVector:'Vector')->'Vector':
-        if len(self.values) != len(addVector):
+        if len(self.data) != len(addVector.data):
             raise TimeoutError()
         else:
             result = []
-            for i in range(0, len(self.values)):
-                result.append(self.values[i]+addVector.values[i])
+            for i in range(0, len(self.data)):
+                result.append(self.data[i]+addVector.data[i])
             return Vector(result)
     def __mul__(self, mulVector)->int|float:
         '''
             provides scolar multiply for vectors
         '''
         if type(mulVector) == Vector:
-            if len(self.values) != len(mulVector.values):
+            if len(self.data) != len(mulVector.data):
                 raise TimeoutError()
             else:
                 result = 0
-                for i in range(0, len(self.values)):
-                    result += self.values[i]*mulVector.values[i]
+                for i in range(0, len(self.data)):
+                    result += self.data[i]*mulVector.data[i]
             return result
         else:
             result = []
-            for i in range(0, self.values):
-                result.append(self.values[i]*mulVector)
+            for i in range(0, len(self.data)):
+                result.append(self.data[i]*mulVector)
             return Vector(result)
 
     def __pow__(self, powVector:'Vector')->'Vector':
@@ -116,19 +119,49 @@ class Vector():
             provides vector multiply for vectors
                 resultVector.len is calculated automaticly with sin between vectors
         '''
-        if len(self.values) != len(powVector.values):
+        if len(self.data) != len(powVector.data):
             raise TimeoutError()
-        if len(self.values) != 3:
+        if len(self.data) != 3:
             raise TimeoutError()
-        result = Vector([self.values[1]*powVector.values[2]-self.values[2]*powVector.values[1], -1*(self.values[0]*powVector.values[2]-self.values[2]*powVector.values[0]), self.values[0]*powVector.values[1]-self.values[1]*powVector.values[0]])
+        result = Vector([self.data[1]*powVector.data[2]-self.data[2]*powVector.data[1], -1*(self.data[0]*powVector.data[2]-self.data[2]*powVector.data[0]), self.data[0]*powVector.data[1]-self.data[1]*powVector.data[0]])
         result.__flags['Length']=self.__flags['Length']*powVector.__flags['Length']*Vector.find_sinus(self, powVector)
         return result
     def __str__(self):
-        return str(self.values)
+        return str(self.data)
 
     def print(self):
         print(f'This a vector:')
-        print(self)
+        print(self.data)
         print(f'With flags:')
         for key, value in self.__flags.items():
             print(f'{key}: {value}')
+
+    def vec_mul(self,value):
+        a=[]
+        for i in range (len(self.data)):
+            a.append(self.data[i]*value)
+        return Vector(a)
+
+    def __sub__(self, subVector):
+        '''
+            provides sub-operation for vectors
+        '''
+        if type(subVector) == Vector:
+            if len(self.data) != len(subVector.data):
+                raise TimeoutError()
+            else:
+                result = []
+                for i in range(0, len(self.data)):
+                    result.append(self.data[i]-subVector.data[i])
+            return Vector(result)
+        else:
+            result = []
+            for i in range(0, len(self.data)):
+                result.append(self.data[i]*subVector)
+            return Vector(result)
+
+    def copy(self):
+        new_vec_data=[]
+        for i in range(len(self.data)):
+            new_vec_data.append(self.data[i])
+        return Vector(new_vec_data)

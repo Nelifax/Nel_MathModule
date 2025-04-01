@@ -7,6 +7,8 @@ class OperatorRootR(OperatorRoot):
         if operand.sign == '-' and exponent%2==0:
             raise TimeoutError('NOT IMPLEMENTED YET')        
         numb = operand.copy()
+        if operand==0:
+            return Rational(0)
         startpoint_int_bin=bin(int(operand.references['integer part']))[2:]
         if len(startpoint_int_bin)>int(exponent):
             startpoint_int=str(int(startpoint_int_bin[:len(startpoint_int_bin)//int(exponent)+1],2))
