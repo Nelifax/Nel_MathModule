@@ -1,4 +1,4 @@
-__all__ = ['is_prime', 'gcd', 'lcm', 'euler_phi', 'carmichael', 'next_prime', 'find_primitive_root']
+__all__ = ['is_prime', 'gcd', 'lcm', 'euler_phi', 'carmichael', 'next_prime', 'find_primitive_root', 'legendre_symbol']
 
 from NelMath.objects.math_base.Rational import Rational
 
@@ -226,4 +226,6 @@ def find_primitive_root(modulo:int, divisor_list:list=[], mode='asc'):
                 if check:
                     return i
 
-    
+def legendre_symbol(a,n):
+    if a==-1:
+        return pow(a,int((n-1)/2))

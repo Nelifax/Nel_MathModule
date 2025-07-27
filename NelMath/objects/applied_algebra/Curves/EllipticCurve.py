@@ -195,7 +195,11 @@ class EllipticCurve(Curve):
                             results.append(EllipticCurvePoint({'a':self.params_short[0],'b':self.params_short[1],'x':i,'y':int(y),'z':1}, self.modulo))
                         if pow(-y,2) + self.params[0]*i*(-y) + self.params[2]*(-y) == pow(i,3) + self.params[1]*pow(i,2) + self.params[3]*i + self.params[4]:
                             results.append(EllipticCurvePoint({'a':self.params_short[0],'b':self.params_short[1],'x':i,'y':-int(y),'z':1}, self.modulo))
-            return {},results
+            end_results=[]
+            for i in results:
+                if i not in end_results:
+                    end_results.append(i)
+            return {},end_results
         torsion_results={}
         all_torsion_points=[EllipticCurvePoint.infinity(self.params_short[0], self.params_short[1], self.modulo)]
         for res in results:  
