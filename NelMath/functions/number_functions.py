@@ -41,7 +41,11 @@ def next_prime(low_border:int)->int:
     '''
     primes=[3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
     prime = low_border
-    if prime==2:
+    if prime==2 or prime in primes:
+        return prime
+    if prime<98:
+        while prime not in primes:
+            prime+=1
         return prime
     if prime%2==0:
         prime+=1
@@ -60,6 +64,14 @@ def next_prime(low_border:int)->int:
             if is_prime(candidate):
                 return candidate
         prime=candidates[-1]
+
+def get_primes_list(border:int):
+    primes=[]
+    a=2
+    while a<border:
+        primes.append(a)        
+        a=next_prime(a+1)
+    return primes
           
 
 
@@ -121,33 +133,21 @@ def euler_phi(number:int|Rational)->Rational:
     '''
     returns euler phi result for number
     '''
+    from NelMath.objects.math_base.Fraction import Fraction
     if not isinstance(number, Rational):
         number = Rational(number)
     if is_prime(number):
         return number-1
     else:
-        from .factorization import factorize
-        factors = factorize(number)
-        result = 1
-        if len(set(factors)) == len(factors):
-            for factor in factors:
-                result *= factor-1
-            return result
-        else:
-            remembered_factor = factors[0]
-            count=0
-            for factor in factors:
-                if remembered_factor != factor:
-                    result*=remembered_factor**count-remembered_factor**(count-1)
-                    count=1                    
-                    remembered_factor = factor
-                else:
-                    count+=1
-            if count!=1:
-                result*=remembered_factor**count-remembered_factor**(count-1)
-            else:
-                result*=remembered_factor-1
-            return result
+        res=number
+        a=2
+        while a<number:
+            if res%a=='0':
+                res*=Fraction([a-1,a])
+            a=next_prime(a+1)
+        res.simplify()
+        return int(str(res).split('/')[0])
+
 def carmichael(number:int|Rational):
     '''
     returns carmichael function result for number

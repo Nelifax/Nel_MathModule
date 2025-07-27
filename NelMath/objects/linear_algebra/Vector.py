@@ -3,21 +3,33 @@ __all__ = ['Vector']
 
 class Vector(Linear_object):
     def __init__(self, values:list):
-        self.data = values
+        if isinstance(values, Vector):
+            self.data = [k for k in values.data]
+        else:
+            self.data = values
         self.__flags = {
-            'Length': 0,
             'Dimension': len(values),
             'Normalized': False,
-            'Unit': Vector.is_vector_unit(self)
+            #'Unit': Vector.is_vector_unit(self)
             }
+        self.__length=None
+
+    def __getitem__(self, index):
+        return self.data[index]
+    def __len__(self):
+        return len(self.data)
         
     @staticmethod
     def find_length(vector:'Vector')->int|float:
-        from NelMath import Rational
-        length = Rational(0)
-        for i in range(0, len(vector.data)):
-            length+=vector.data[i]**2
+        from NelMath import Number
+        length = Number(sum(x**2 for x in vector.data))
         return length.sqrt()
+
+    @property
+    def length(self):
+        if self.__length==None:
+            self.__length=Vector.find_length(self)
+        return self.__length
 
     @staticmethod
     def find_sinus(vector_A:'Vector', vector_B:'Vector')->float:
@@ -59,11 +71,11 @@ class Vector(Linear_object):
             return False
 
     def normalize(self):
+        from NelMath.objects.math_base.Fraction import Fraction
         for i in range(0, len(self.data)):
-            self.data[i] = self.data[i]/self.__flags['Length']
+            self.data[i] = Fraction([self.data[i],self.length])
         self.__flags['Normalized'] = True
-        self.__flags['Unit'] = Vector.is_vector_unit(self)
-        self.__flags['Length'] = 1
+        self.__length = 1
         return self
 
     @staticmethod
@@ -92,10 +104,8 @@ class Vector(Linear_object):
         if len(self.data) != len(addVector.data):
             raise TimeoutError()
         else:
-            result = []
-            for i in range(0, len(self.data)):
-                result.append(self.data[i]+addVector.data[i])
-            return Vector(result)
+            return Vector([x+y for x,y in zip(self.data, addVector.data)])
+            
     def __mul__(self, mulVector)->int|float:
         '''
             provides scolar multiply for vectors
@@ -104,15 +114,9 @@ class Vector(Linear_object):
             if len(self.data) != len(mulVector.data):
                 raise TimeoutError()
             else:
-                result = 0
-                for i in range(0, len(self.data)):
-                    result += self.data[i]*mulVector.data[i]
-            return result
+                return sum(x*y for x,y in zip(self.data, mulVector.data))
         else:
-            result = []
-            for i in range(0, len(self.data)):
-                result.append(self.data[i]*mulVector)
-            return Vector(result)
+            return Vector([a*mulVector for a in self.data])
 
     def __pow__(self, powVector:'Vector')->'Vector':
         '''
@@ -126,6 +130,7 @@ class Vector(Linear_object):
         result = Vector([self.data[1]*powVector.data[2]-self.data[2]*powVector.data[1], -1*(self.data[0]*powVector.data[2]-self.data[2]*powVector.data[0]), self.data[0]*powVector.data[1]-self.data[1]*powVector.data[0]])
         result.__flags['Length']=self.__flags['Length']*powVector.__flags['Length']*Vector.find_sinus(self, powVector)
         return result
+
     def __str__(self):
         return str(self.data)
 
@@ -137,10 +142,9 @@ class Vector(Linear_object):
             print(f'{key}: {value}')
 
     def vec_mul(self,value):
-        a=[]
-        for i in range (len(self.data)):
-            a.append(self.data[i]*value)
-        return Vector(a)
+        return Vector([a*value for a in self.data])
+    def vec_add(self,value):
+        return Vector([a+value for a in self.data])
 
     def __sub__(self, subVector):
         '''
@@ -150,18 +154,22 @@ class Vector(Linear_object):
             if len(self.data) != len(subVector.data):
                 raise TimeoutError()
             else:
-                result = []
-                for i in range(0, len(self.data)):
-                    result.append(self.data[i]-subVector.data[i])
-            return Vector(result)
+                return Vector([x-y for x,y in zip(self.data, subVector.data)])
         else:
-            result = []
-            for i in range(0, len(self.data)):
-                result.append(self.data[i]*subVector)
-            return Vector(result)
+            return Vector([a-subVector for a in self.data])
 
     def copy(self):
         new_vec_data=[]
         for i in range(len(self.data)):
             new_vec_data.append(self.data[i])
         return Vector(new_vec_data)
+
+    def __repr__(self):
+        return '['+', '.join([str(dat) for dat in self.data])+']'
+
+    def zero(n)->'Vector':
+        '''
+        returns Vector object with n zero elements
+        '''        
+        from NelMath import Rational
+        return Vector([Rational(0) for _ in range(n)])

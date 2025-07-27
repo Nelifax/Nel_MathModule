@@ -1,9 +1,7 @@
 from .Rational import Rational, MM_number_max_float_part
 
+
 __all__ = ['Constant']
- 
-global MM_use_constant_file
-MM_use_constant_file = False
 
 class Constant():
     '''
@@ -16,14 +14,19 @@ class Constant():
     __instance = None
     __initialized = False
 
-    def __new__(cls, float_part:int=MM_number_max_float_part):
+    def __new__(cls, float_part:int=0):
         if cls.__instance is None:
             cls.__instance = super(Constant, cls).__new__(cls)
         return cls.__instance
 
-    def __init__(self, float_part:int=MM_number_max_float_part):
+    def __init__(self, float_part:int=0):
+        from NelMath.properties.settings_handler import SettingsHandler
+        settings=SettingsHandler()  
         if not self.__initialized:
-            self.__max_float_part = float_part
+            if float_part==0:
+                self.__max_float_part=settings.get('mm_max_float_part')
+            else:
+                self.__max_float_part = float_part
             self.__initialized = True
     
     def e(self)->'Rational':
@@ -63,7 +66,7 @@ class Constant():
         if not hasattr(self, 'constants'):
             return None
         if constant in self.constants.keys():
-            return self.constant[constant]
+            return self.constants[constant]
         else:
             return None
 
@@ -98,7 +101,7 @@ class Constant():
         iterator = Rational(1, {'max float part': self.__max_float_part})
         border = Rational('0.'+'0'*(self.__max_float_part-1)+'1', {'max float part': self.__max_float_part})
         while True:
-            result_next = result_next.__mul__(1/iterator, 'exp')
+            result_next = result_next*(1/iterator)
             result += result_next
             if abs(result_next) < border:
                 break

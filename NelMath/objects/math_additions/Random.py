@@ -53,16 +53,27 @@ class Random:
         '''
         if beg>end:
             raise TimeoutError()
-        number = self.randint() % end+1
-        if number < beg:
-            return number+beg
-        else:
-            return number
+        if beg>=0:
+            number = self.randint() % end+1
+            if number < beg:
+                return number+beg
+            else:
+                return number
+        elif beg<0 and end>=0:
+            sb=beg
+            beg, end = 0, end+abs(beg)
+            el=self.rand_range(beg,end)
+            return el+sb
+        elif beg<0 and end<0:
+            beg, end = abs(end), abs(beg)            
+            el=self.rand_range(beg,end)
+            return -el
+
     
     def rand_primal(self, end:int = 2147483549):
-        from functions.number_functions import is_simple
+        from functions.number_functions import is_prime
         a = self.rand_range(2, end)
-        while not is_simple(a):
+        while not is_prime(a):
             a = self.rand_range(2, end)
         return a
 

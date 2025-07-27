@@ -21,7 +21,7 @@ class OperatorPowR(OperatorPow):
                         exp //= 2
                     return result
                 else:
-                    exp._Rational__sign_invert()
+                    exp._Number__sign_invert()
                     return 1/(numb.__pow__(exp, None))
             else:
                 if exp.sign == '+':
@@ -40,11 +40,15 @@ class OperatorPowR(OperatorPow):
                 else:
                     from NelMath.functions.number_functions import gcd, is_prime
                     if gcd(numb, modulo)!=1:
-                        raise TimeoutError('gcd(elem,mod)!=0')
+                        raise TimeoutError(f'gcd({numb},{modulo})!=1')
                     if is_prime(modulo):
                         return numb.__pow__(modulo-2, modulo)%modulo
                     else:
                         from NelMath.functions.number_functions import euler_phi
                         return numb.__pow__(euler_phi(modulo)-1, modulo)%modulo
-        else:
-            raise TimeoutError('NOT IMPLEMENTED YET')  
+        else:            
+            res=pow(numb,Rational(exp.references['integer part']))
+            pow_degree=len(exp.references['float part'])
+            from NelMath.objects.math_base.Fraction import Fraction
+            exp=Fraction([exp.references['float part'],10**pow_degree])
+            return res*pow(numb, exp.references['numerator']).nroot(exp.references['denominator'])
