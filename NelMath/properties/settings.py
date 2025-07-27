@@ -3,7 +3,7 @@ settings={
     'mm_number_floordiv_ceiling_up': True, 
     #if True then set sage-like ceiling ex:7//-5=-2. If false then set logic ceiling ex:7//-5=-1 
 #math base settings
-    'mm_max_float_part':5,
+    'mm_max_float_part':10,
     'mm_dynamic_class_changing': False,
     'mm_modulo_negative_results': True,
     #if True then set a%b operation result as -c when a>b (python-like behavior). If False then set a%b operation always positive

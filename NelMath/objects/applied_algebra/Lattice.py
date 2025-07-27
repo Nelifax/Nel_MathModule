@@ -104,10 +104,10 @@ class Lattice():
                     else:
                         mu[i][j]=-int(mu_) if inverted else int(mu_)
                     A.vectors[i]=A.vectors[i].copy()-(A.vectors[j].copy()*mu[i][j])
-                    #B=update_GSH_ort(A.copy(),i)                    
+                    #=update_GSH_ort(A.copy(),i)                    
                     B=A.copy().GSH_ort()
-                    #mu=update_mu(mu,i,A,B)
-                    mu=calculate_mu(A,B)
+                    mu=update_mu(mu,i,A,B)
+                    #mu=calculate_mu(A,B)
             if (delta-mu[i][i-1]**2)*(Vector.find_length(B.vectors[i-1])**2)<=Vector.find_length(B.vectors[i])**2:
                 print(f'Программа не умерла, она усиленно считает уже {int(time.time()-self.init_time)}...[delta](i={i},j={j})                        ',end='\r')
                 i=i+1
@@ -118,8 +118,8 @@ class Lattice():
                 del(b)
                 #B=update_GSH_ort(A.copy(),i-1)
                 B=A.copy().GSH_ort()
-                #mu=update_mu(mu,i,A,B,'k+1')
-                mu=calculate_mu(A,B)
+                mu=update_mu(mu,i,A,B,'k+1')
+                #mu=calculate_mu(A,B)
                 i=max(i-1,1)
                 #i=i-1
             print(f'Программа не умерла, она усиленно считает уже {int(time.time()-self.init_time)}...[LLL-cycle](i={i})                        ',end='\r')
