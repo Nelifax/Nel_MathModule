@@ -36,6 +36,7 @@ class EllipticCurve(Curve):
             self.references={
                 'short form': f'y^2=x^3+{params[0]}x+{params[1]}' if self.modulo==None else f'y^2=x^3+{params[0]}x+{params[1]} (mod {self.modulo})'
                 }
+            self._params_short=params
 
     @property
     def points(self):
@@ -99,10 +100,12 @@ class EllipticCurve(Curve):
                 self._determinant=[-16*(4*(self.params[0]**3) + 27*(self.params[1]**2))]
         return self._determinant[0]
 
-    def point(self, pos=0):
+    def point(self, pos=0, params=[]):
         from NelMath.objects.applied_algebra.Curves.EllipticCurvePoint import EllipticCurvePoint
-        if pos==0:
+        if pos==0 and params==[]:
             return EllipticCurvePoint.infinity(*self._params_short,self.modulo)
+        elif pos==0 and params!=[]:
+            return EllipticCurvePoint([self.A])
         else:
             if pos<len(self.points):
                 return self.points[pos]
@@ -147,6 +150,14 @@ class EllipticCurve(Curve):
         print(self.params)
         for key, value in self.references.items():
             print(f'{key}: {value}')
+
+    def __repr__(self):
+        repr_str='Elliptic Curve defined by '
+        if self.references['short form']:
+            repr_str+=self.references['short form']
+        else:
+            repr_str+=self.references['curve equation']
+        return repr_str
 
     def torsion_points(self, border=100):
         '''
@@ -283,3 +294,30 @@ class EllipticCurve(Curve):
         plt.legend()
         #plt.axis('equal')
         plt.show()
+
+    @staticmethod
+    def get_random_curve(beg_border, end_border, modulo=None, return_random_point=False)->'EllipticCurve':
+        '''
+        returns EllipticCurve class as y^2=x^3+Ax+B curve that non-singular with randomized A and B with modulo if needed
+        '''
+        from NelMath.objects.math_additions.Random import Random
+        rand=Random()
+        while True:
+            A=rand.rand_range(beg_border,end_border)
+            x0=rand.rand_range(beg_border,end_border)
+            y0=rand.rand_range(beg_border,end_border)
+            if modulo!=None:
+                B = pow(y0**2 - x0**3 - A*x0, 1, modulo)
+            else:
+                B = y0**2 - x0**3 - A*x0
+            try:
+                E=EllipticCurve([A,B],modulo)
+                if return_random_point:
+                    P=EllipticCurvePoint({'a':A, 'b':B, 'x':x0, 'y':y0, 'z':1}, E.modulo)
+                break
+            except:
+                pass
+        if return_random_point:
+            return E,P
+        else:
+            return E

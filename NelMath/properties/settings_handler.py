@@ -73,6 +73,7 @@ class SettingsHandler():
                 'mm_key_maximum_repeat_count' : -1,                
                 'mm_MR_prime_max_tries' : 10,
                 'mm_MR_prime_high_candidate_border': 100,
+                'mm_LPS_max_trials': 10,
             }
         self.__settings=default_settings
 

@@ -6,4 +6,6 @@ class OperatorMultiplyFR(OperatorMultiply):
     def execute(operand_a: Fraction, operand_b: Rational):
         operand_a.improper_view()
         if operand_a.sign==operand_b.sign:
-            return Fraction([operand_a.references['numerator']*operand_b, operand_a.references['denominator']])
+            return Fraction([operand_a.references['numerator']*abs(operand_b), operand_a.references['denominator']])
+        else:
+            return -Fraction([operand_a.references['numerator']*abs(operand_b), operand_a.references['denominator']])

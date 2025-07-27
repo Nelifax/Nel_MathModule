@@ -58,9 +58,9 @@ class Fraction(Number):
                 self.references['denominator'] = Rational(denominator)            
             self.references['integer part'] = Rational(0)
             self.sign=value.sign
-            self.value = Rational(0)
+            self._value = Rational(0)
         elif Number.is_fraction(value):                        
-            self.value = Rational(0)
+            self._value = Rational(0)
             if type(value)==str:
                 if value[0]=='-':
                     self.__sign_invert()
@@ -83,19 +83,21 @@ class Fraction(Number):
                         self.references['denominator']=Rational(1)
                 elif len(value)==2:
                     for i in range(len(value)):
-                        if '(' in value and ')' in value:
+                        if '(' in str(value[i]) and ')' in str(value[i]):
                             value[i]=Fraction(value[i])
                     if str(value[1]) == '0':
                         raise TimeoutError
                     match(isinstance(value[0], Fraction), isinstance(value[1], Fraction)):
                         case(True, True):
                             value[0].improper_view()
-                            value[1].improper_view()
+                            value[1].improper_view()                                                                         
+                            if value[0].sign!=value[1].sign:
+                                self.sign='-'
                             self.references['numerator']=value[0].references['numerator']*value[1].references['denominator']
                             self.references['denominator']=value[1].references['numerator']*value[0].references['denominator']
                         case(True, False):                            
                             value[0].improper_view()
-                            value=[value[0], Rational(value[1])]
+                            value=[value[0], Rational(value[1])]  
                             self.references['numerator']=value[0].references['numerator']
                             self.references['denominator']=value[0].references['denominator']*value[1]
                         case(False, True):
@@ -106,7 +108,7 @@ class Fraction(Number):
                         case _:
                             value=[Rational(value[0]), Rational(value[1])]
                             self.references['numerator']=value[0]
-                            self.references['denominator']=value[1]
+                            self.references['denominator']=value[1]   
         else:
             raise TimeoutError()
         if self.references['numerator'].sign=='-':
@@ -116,11 +118,20 @@ class Fraction(Number):
             self.__sign_invert()
             self.references['denominator']._Number__sign_invert()
         self.standartize()
-        self.simplify()   
-        from NelMath.objects.math_base.Operators.Division.OperatorTruedivRR import OperatorTruedivRR
-        self.value=self.references['integer part'] + OperatorTruedivRR().execute(self.references['numerator'], self.references['denominator'])
-        if self.sign=='-':
-            self.value=-self.value
+        if self.references['integer part'] == 0 and self.references['numerator'] == 0 and self.sign=='-':
+            self.__sign_invert()            
+        if self.__flags['auto-simplify']:
+            self.simplify()   
+        self._value=None
+
+    @property
+    def value(self):
+        if self._value==None:            
+            from NelMath.objects.math_base.Operators.Division.OperatorTruedivRR import OperatorTruedivRR
+            self._value=self.references['integer part'] + OperatorTruedivRR().execute(self.references['numerator'], self.references['denominator'])
+            if self.sign=='-':
+                self._value=-self._value
+        return self._value
     
     def standartize(self)->'Fraction':
         while self.references['denominator'].references['float part']!='0' or self.references['numerator'].references['float part']!='0':
@@ -133,9 +144,9 @@ class Fraction(Number):
             self.references['integer part']+=1
             self.references['numerator']=Rational(0)
         if self.references['numerator']==0:
-            return Rational(self.references['integer part'])
+            return abs(Rational(self.references['integer part']))
         if self.references['numerator']==self.references['denominator']:
-            return Rational(self.references['integer part'])
+            return abs(Rational(self.references['integer part']))
 
     def improper_view(self)->None:
         if self.references['integer part']!=0:
@@ -196,7 +207,7 @@ class Fraction(Number):
         return neg
 
     def __eq__(self, other)->bool:
-        if other=='':
+        if other=='' or other==None:
             return False
         if not isinstance(other, Fraction):
             other=Fraction(other, {'type changing':False})
@@ -239,7 +250,7 @@ class Fraction(Number):
 
     def print(self):
         print(f'Fraction:{self.references["integer part"]}+{self.references["numerator"]}/{self.references["denominator"]}')
-        print(f'With:\n Integer part={self.references["integer part"]}\n   And value={self.value}')
+        print(f'With:\n Integer part={self.references["integer part"]}\n   And value={self._value}')
 
     def __format__(self, format_spec): 
         if format_spec:

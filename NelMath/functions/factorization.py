@@ -1,4 +1,4 @@
-__all__ = ['factorize' , 'get_primes', 'divisors']
+﻿__all__ = ['factorize' , 'get_primes', 'divisors', 'LPS', 'ECM' ,'Ferma_method']
 
 from NelMath.objects.math_base.Rational import Rational
 from math import isqrt
@@ -70,6 +70,146 @@ def squfof(number:int)->list:
         P = P_s.copy()        
         i+=1
     return Q.copy() if Q%2==1 else Q.copy()/2
+
+def LPS(number:Rational, B=None, trials=None):
+    """
+    Факторизация числа N с использованием LLL-алгоритма.
+    
+    Параметры:
+    - N: число для факторизации (составное, не простое)
+    - B: граница для базы простых чисел (по умолчанию ~exp(0.5 * sqrt(log N log log N)))
+    - trials: количество попыток перед отказом
+    
+    Возвращает: нетривиальный делитель N или None, если не удалось
+    """    
+    from NelMath.properties.settings_handler import SettingsHandler
+    from NelMath.objects.math_additions.Random import Random   
+    import random
+    import math    
+    settings=SettingsHandler()
+    scale=Rational('1'+'0'*(settings.get('mm_max_float_part')-1))
+    N=int(number)
+    rand=Random()
+    def primes_list_till_border(border):
+        primes_list=[]
+        from NelMath.functions.number_functions import next_prime
+        a=next_prime(2)
+        while border>a:
+            primes_list.append(Rational(a))
+            a=next_prime(a+1)
+        return primes_list
+    # Шаг 1: Выбор базы простых чисел
+    if B==None:
+        B = int(math.exp(0.5 * math.sqrt(math.log(N) * math.log(math.log(N)))))
+        #B = int(number.nroot(15))
+    
+    primes = primes_list_till_border(B)
+    if trials==None:
+        trials=settings.get('mm_LPS_max_trials')
+    
+    for _ in range(trials):
+        # Шаг 2: Построение векторов решётки
+        k = len(primes)
+        lattice_vectors = []
+        
+        # Добавляем векторы вида (log(p_i), 0, ..., 0, log(N) * e_i)
+        for i in range(k):
+            vec = [Rational(0)] * (k + 1)
+            vec[i] = Rational((primes[i].log() * scale).references['integer part'])
+            vec[k] = Rational((number.log() * random.randint(0, 1) * scale).references['integer part'])  # случайный коэффициент
+            lattice_vectors.append(vec)
+        
+        # Добавляем вектор (0, ..., 0, C), где C ≈ sqrt(k) * log(N)
+        C = Rational((Rational(k).sqrt() * number.log() * scale).references['integer part'])
+        last_vec = [Rational(0)] * (k + 1)
+        last_vec[k] = C
+        lattice_vectors.append(last_vec)
+        from NelMath.objects.applied_algebra.Lattice import Lattice
+        # Шаг 3: Применение LLL-алгоритма
+        from NelMath.objects.linear_algebra.Vector import Vector
+        a=[Vector(vec) for vec in lattice_vectors]
+        lattice = Lattice([Vector(vec) for vec in lattice_vectors])
+        print(len(lattice_vectors))
+        reduced_basis = lattice.LLL()
+        # Шаг 4: Поиск нетривиального соотношения
+        for vec in reduced_basis.vectors:
+            print(vec)
+            if abs(vec.data[-1]) < scale/10:  # Проверка остатка
+                x = 1
+                x=[x*pow(primes[i], pow(vec.data[i],1,number), number) for i in range(k)]
+                d = math.gcd(pow(x[0],1,N), N)
+                if 1 < d < N:
+                    return d
+    return None
+
+def ECM(number:Rational, B=None, curves=None):
+    from NelMath.properties.settings_handler import SettingsHandler
+    from NelMath.objects.applied_algebra.Curves.EllipticCurve import EllipticCurve
+    from NelMath.functions.number_functions import get_primes_list, gcd, is_prime
+    settings=SettingsHandler()
+    if B==None:
+        B=settings.get('mm_ECM_B_border')
+        if B==0:
+            #B=10**int(number.log(10))
+            B=10**6
+    if curves==None:
+        curves=settings.get('mm_ECM_curve_trials')    
+    '''
+    primes=get_primes_list(B)
+    for i in range(0,curves):
+        E,P=EllipticCurve.get_random_curve(1,number-1, number, True)
+        Q = P
+        for p in primes:
+            power = p
+            while power <= B:
+                try:
+                    Q = Q * int(power)  # Умножаем на p^k
+                except TimeoutError as e:
+                    ee=int(str(e).split('gcd(')[1].split(',')[0])
+                    d = gcd(ee, number)
+                    if d > 1 and d < number:
+                        return d
+                power *= p
+    '''
+    for i in range(0,curves):
+        E,P=EllipticCurve.get_random_curve(1,number-1, number, True)
+        Q = P
+        p = 2  # Начинаем с первого простого числа
+        while p <= B:
+            if is_prime(p):  # Проверяем простоту на лету
+                power = p
+                while power <= B:
+                    try:
+                        Q = Q * int(power)
+                    except TimeoutError as e:
+                        ee=int(str(e).split('gcd(')[1].split(',')[0])
+                        d = gcd(ee, number)
+                        if d > 1 and d < number:
+                            return d
+                    power *= p  # Следующая степень: p^2, p^3, ...
+            p += 1 if p == 2 else 2
+
+def Ferma_method(number:Rational):
+    """
+    Метод Ферма для факторизации числа N = p * q, где p ≈ q.
+    Работает, если p и q близки друг к другу.
+    Возвращает: (p, q) или None, если не удалось факторизовать.
+    """
+    a = Rational(number.sqrt().references['integer part'])
+    if a * a < number:
+        a += 1
+
+    while True:
+        b2 = a * a - number
+        b = Rational(b2.sqrt().references['integer part'])
+        if b * b == b2:
+            p = a - b
+            q = a + b
+            if p * q == number:
+                return (p, q)
+            else:
+                return None
+        a += 1
 
 def factorize(number:Rational|int, mode='std')->list:
     '''
