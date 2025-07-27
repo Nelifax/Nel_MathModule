@@ -213,6 +213,18 @@ class Number():
         from NelMath.objects.math_base.Operators.Root.OperatorRoot import OperatorRoot
         return OperatorRoot().execute(self, exponent, precision)
 
+    def ln(self):
+        from NelMath.objects.math_base.Operators.Logx.OperatorLnX import OperatorLnX
+        return OperatorLnX().execute(self)
+
+    def log(self, base=2):
+        from NelMath.objects.math_base.Operators.Logx.OperatorLog import OperatorLog
+        return OperatorLog().execute(self, base)
+
+    def bit_length(self):
+        return int(self.references['integer part']).bit_length()
+
+
     def __abs__(self):
         if self.sign == '-':
             return -self
