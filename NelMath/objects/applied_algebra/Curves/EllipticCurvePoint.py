@@ -1,4 +1,4 @@
-﻿__all__ = ['Point']
+﻿__all__ = ['EllipticCurvePoint']
 from NelMath.objects.applied_algebra.Curves.Point import Point
 from NelMath.objects.math_base.Rational import Rational
 
@@ -41,7 +41,7 @@ class EllipticCurvePoint(Point):
             return EllipticCurvePoint.infinity(self.a, self.b, self.modulo)
         else:#ситуация разных точек
             if self.modulo!=None:
-                l=pow(pow(other.y-self.y,1,self.modulo)*pow(other.x-self.x,1,self.modulo),1,self.modulo) #наклон
+                l=pow(pow(other.y-self.y,1,self.modulo)*pow(other.x-self.x,-1,self.modulo),1,self.modulo) #наклон
                 x3=pow(l**2-self.x-other.x,1,self.modulo)
                 y3=pow(l*(self.x-x3)-self.y,1,self.modulo)
             else:

@@ -319,7 +319,7 @@ class Matrix(Linear_object):
     def zeros(n,m=0)->'Matrix':
         '''
             returns a zeros matrix with NxM dims.
-            if M=0, returns NxN unit matrix
+            if M=0, returns NxN zero matrix
         '''
         return Matrix([Vector.zero(m) for _ in range(n)] if m!=0 else [Vector.zero(n) for _ in range(n)])
 

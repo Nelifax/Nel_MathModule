@@ -100,12 +100,12 @@ class EllipticCurve(Curve):
                 self._determinant=[-16*(4*(self.params[0]**3) + 27*(self.params[1]**2))]
         return self._determinant[0]
 
-    def point(self, pos=0, params=[]):
+    def point(self, pos=0, params={}):
         from NelMath.objects.applied_algebra.Curves.EllipticCurvePoint import EllipticCurvePoint
-        if pos==0 and params==[]:
+        if pos==0 and params=={}:
             return EllipticCurvePoint.infinity(*self._params_short,self.modulo)
-        elif pos==0 and params!=[]:
-            return EllipticCurvePoint([self.A])
+        elif pos==0 and params!={}:
+            return EllipticCurvePoint({'a':self.params_short[0], 'b':self.params_short[1], 'x':params['x'], 'y':params['y'], 'z':1},self.modulo)
         else:
             if pos<len(self.points):
                 return self.points[pos]
